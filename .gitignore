@@ -3,7 +3,14 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
-spring-boot-microservice.iml
+*/.iml
+.iml
+*/.mvn
+.idea
+*/target/*
+
+*/mvnw
+*/mvnw.cmd
 
 ### STS ###
 .apt_generated
