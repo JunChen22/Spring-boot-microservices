@@ -1,0 +1,11 @@
+problems
+Maven related
+- the multi module project error with packaging as whole project.
+  - submodule like api and util can package itself fine but doesn't connect to product    	  service
+  - "Unable to find main class" in api and util module
+- error with changing artifact
+https://www.youtube.com/watch?v=KNGQ9JBQWhQ
+
+solution:
+	submodule need to add "<relativepath >" refrence to the parent pom
+

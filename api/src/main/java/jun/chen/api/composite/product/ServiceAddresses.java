@@ -1,4 +1,4 @@
-package jun.chen.api.core.composite.product;
+package jun.chen.api.composite.product;
 
 import lombok.Getter;
 

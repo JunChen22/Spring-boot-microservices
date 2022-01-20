@@ -32,6 +32,7 @@ Spring-boot-microservice
 | Docker                  | Containerization        | https://www.docker.com/                 |
 | Kubernetes              | container orchestration | https://kubernetes.io/                  |
 | Istio                   | Service mesh            | https://istio.io/                       |
+| Maven                   | Build tool              | https://maven.apache.org/               |
 
 
 
