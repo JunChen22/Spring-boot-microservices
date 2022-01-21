@@ -61,7 +61,6 @@
 				<artifactId>reactor-test</artifactId>
 			</dependency>
 			<!-- shared module related-->
-
 			<dependency>
 				<groupId>com.itsthatjun.microservices</groupId>
 				<artifactId>util</artifactId>

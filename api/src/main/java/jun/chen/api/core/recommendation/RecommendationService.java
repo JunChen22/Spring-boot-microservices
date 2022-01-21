@@ -7,8 +7,14 @@ import java.util.List;
 
 public interface RecommendationService {
 
+    /**
+     * Sample usage: curl $HOST:$PORT/recommendation?productId=1
+     *
+     * @param productId
+     * @return
+     */
     @GetMapping(
-            value = "/recommendation",
+            value    = "/recommendation",
             produces = "application/json")
-    List<Recommendation> getRecommendation(@RequestParam(value = "productId", required = true) int productId);
+    List<Recommendation> getRecommendations(@RequestParam(value = "productId", required = true) int productId);
 }

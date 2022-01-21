@@ -20,6 +20,7 @@ public class ProductAggregate {
             List<RecommendationSummary> recommendations,
             List<ReviewSummary> reviews,
             ServiceAddresses serviceAddresses) {
+
         this.productId = productId;
         this.name = name;
         this.weight = weight;

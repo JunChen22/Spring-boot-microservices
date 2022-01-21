@@ -9,15 +9,15 @@ public class Review {
     private final String author;
     private final String subject;
     private final String content;
-    private final String ServiceAddress;
+    private final String serviceAddress;
 
     public Review() {
-        this.productId = 0;
-        this.reviewId = 0;
-        this.author = null;
-        this.subject = null;
-        this.content = null;
-        ServiceAddress = null;
+        productId = 0;
+        reviewId = 0;
+        author = null;
+        subject = null;
+        content = null;
+        serviceAddress = null;
     }
 
     public Review(int productId, int reviewId, String author, String subject, String content, String serviceAddress) {
@@ -26,6 +26,6 @@ public class Review {
         this.author = author;
         this.subject = subject;
         this.content = content;
-        ServiceAddress = serviceAddress;
+        this.serviceAddress = serviceAddress;
     }
 }

@@ -1,17 +1,18 @@
-package jun.chen.microservices.core.review;
+package jun.chen.microservices.core.review.services;
 
 import jun.chen.api.core.review.Review;
 import jun.chen.api.core.review.ReviewService;
 import jun.chen.util.exceptions.InvalidInputException;
 import jun.chen.util.http.ServiceUtil;
-import lombok.extern.java.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@RestController
 public class ReviewServiceImpl implements ReviewService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ReviewServiceImpl.class);
@@ -24,13 +25,13 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<Review> getReview(int productId) {
+    public List<Review> getReviews(int productId) {
 
         if (productId < 1) throw new InvalidInputException("Invalid productId: " + productId);
 
         if (productId == 213) {
-            LOG.debug("No review found for productId: {}", productId);
-            return new ArrayList<>();
+            LOG.debug("No reviews found for productId: {}", productId);
+            return  new ArrayList<>();
         }
 
         List<Review> list = new ArrayList<>();

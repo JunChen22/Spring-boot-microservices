@@ -8,8 +8,8 @@ import java.time.ZonedDateTime;
 @Getter
 public class HttpErrorInfo {
     private final ZonedDateTime timeStamp;
-    private final HttpStatus httpStatus;
     private final String path;
+    private final HttpStatus httpStatus;
     private final String message;
 
     public HttpErrorInfo() {
@@ -20,7 +20,7 @@ public class HttpErrorInfo {
     }
 
     public HttpErrorInfo(HttpStatus httpStatus, String path, String message) {
-        timeStamp = ZonedDateTime.now();
+        this.timeStamp = ZonedDateTime.now();
         this.httpStatus = httpStatus;
         this.path = path;
         this.message = message;

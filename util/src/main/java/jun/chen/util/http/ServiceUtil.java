@@ -18,7 +18,8 @@ public class ServiceUtil {
     private String serviceAddress = null;
 
     @Autowired
-    public ServiceUtil(@Value("${server.port}") String port) {
+    public ServiceUtil(
+            @Value("${server.port}") String port) {
         this.port = port;
     }
 
@@ -29,7 +30,7 @@ public class ServiceUtil {
         return serviceAddress;
     }
 
-    private String findMyHostname(){
+    private String findMyHostname() {
         try {
             return InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException e){
@@ -37,7 +38,7 @@ public class ServiceUtil {
         }
     }
 
-    private String findMyIpAddress(){
+    private String findMyIpAddress() {
         try {
             return InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException e) {

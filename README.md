@@ -12,15 +12,14 @@ Simple microservice project from Hands-On Microservices with Spring Boot and Spr
 -------------------
 
 
-``` lua
+```
 Spring-boot-microservice 
 ├── product-composite-service -- agregated service 
 │     ├── product-service 
 │     ├── recommendation-service
 │     └── review-service
-├── util - shared helper classes hanlding errors
-├── api - API definitions
-└── 
+├── util - helper classes hanlding HTTP info and exception
+└── api - API definitions
 ```
 
 ### Tech stack

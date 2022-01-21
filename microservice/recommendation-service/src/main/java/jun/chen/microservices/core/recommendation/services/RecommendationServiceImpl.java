@@ -25,19 +25,19 @@ public class RecommendationServiceImpl implements RecommendationService {
     }
 
     @Override
-    public List<Recommendation> getRecommendation(int productId) {
+    public List<Recommendation> getRecommendations(int productId) {
 
         if (productId < 1) throw new InvalidInputException("Invalid productId: " + productId);
 
         if (productId == 113) {
-            LOG.debug("No recommendations found for product: {}", productId);
-            return new ArrayList<>();
+            LOG.debug("No recommendations found for productId: {}", productId);
+            return  new ArrayList<>();
         }
 
         List<Recommendation> list = new ArrayList<>();
-        list.add(new Recommendation(productId, 1, "Author 1", 1, "content 1", serviceUtil.getServiceAddress()));
-        list.add(new Recommendation(productId, 2, "Author 2", 2, "content 2", serviceUtil.getServiceAddress()));
-        list.add(new Recommendation(productId, 3, "Author 3", 2, "content 3", serviceUtil.getServiceAddress()));
+        list.add(new Recommendation(productId, 1, "Author 1", 1, "Content 1", serviceUtil.getServiceAddress()));
+        list.add(new Recommendation(productId, 2, "Author 2", 2, "Content 2", serviceUtil.getServiceAddress()));
+        list.add(new Recommendation(productId, 3, "Author 3", 3, "Content 3", serviceUtil.getServiceAddress()));
 
         LOG.debug("/recommendation response size: {}", list.size());
 
