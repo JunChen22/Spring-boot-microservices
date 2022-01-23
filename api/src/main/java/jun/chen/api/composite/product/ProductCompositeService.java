@@ -1,18 +1,19 @@
 package jun.chen.api.composite.product;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 
 public interface ProductCompositeService {
 
-    /**
-     * Sample usage: curl $HOST:$PORT/product-composite/1
-     *
-     * @param productId
-     * @return the composite product info, if found, else null
-     */
+    @PostMapping(
+            value = "/product-composite",
+            consumes = "application/json")
+    void createCompositeProduct(@RequestBody ProductAggregate body);
+
     @GetMapping(
-            value    = "/product-composite/{productId}",
+            value = "/product-composite/{productId}",
             produces = "application/json")
-    ProductAggregate getProduct(@PathVariable int productId);
+    ProductAggregate getCompositeProduct(@PathVariable int productId);
+
+    @DeleteMapping(value = "/product-composite/{productId}")
+    void deleteCompositeProduct(@PathVariable int productId);
 }

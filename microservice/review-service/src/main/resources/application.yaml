@@ -1,13 +1,31 @@
 server.port: 7003
 server.error.include-message: always
 
+# Strongly recommend to set this property to "none" in a production environment!
+spring.jpa.hibernate.ddl-auto: update
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost/reviewdb # need to change localhost for docker-compose
+    username: postgres
+    password: password
+    driverClassName: org.postgresql.Driver
+    #initialization-mode: always
+
+spring.datasource.hikari.initializationFailTimeout: 60000
+
 logging:
   level:
     root: INFO
     jun.chen: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
 ---
 
 spring.profiles: docker
+
+spring.datasource:
+  url: jdbc:postgres://postgresql/reviewdb
 
 server.port: 8080

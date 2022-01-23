@@ -64,3 +64,10 @@ Spring-boot-microservice
 | Logstash      | 7.11.1  | https://www.elastic.co/cn/downloads/logstash                                         |
 | Kibana        | 7.11.1  | https://www.elastic.co/cn/downloads/kibana                                           |
 
+
+
+
+setup environment 
+- Lombok needed IDE configuration/plugin to work.
+- doesn't work with mapstruct/mapper unless configured.
+https://www.baeldung.com/lombok-ide
