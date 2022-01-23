@@ -10,4 +10,13 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.itsthatjun.microservices</groupId>
     <artifactId>api</artifactId>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-common</artifactId>
+            <version>1.6.0</version>
+        </dependency>
+    </dependencies>
 </project>
