@@ -1,6 +1,7 @@
 # Spring-boot-microservices
 
 Simple microservice project from Hands-On Microservices with Spring Boot and Spring Cloud By Magnus Larsson.
+. Major difference is Maven instead of Gradle and Postgres instead of MySQL.
 
 -----------
 
@@ -67,7 +68,50 @@ Spring-boot-microservice
 
 
 
-setup environment 
+setup environment
 - Lombok needed IDE configuration/plugin to work.
 - doesn't work with mapstruct/mapper unless configured.
-https://www.baeldung.com/lombok-ide
+  https://www.baeldung.com/lombok-ide
+
+- maven build
+- docker-compose build
+- docker-compose up
+
+
+
+
+
+
+Problems I encountered Q and A
+
+- more configuration error rather than coding problem
+- Gradle to maven conversion
+- Pom multi module project ordering
+- docker can't build when perssistance is added, needs to have databaes running to build
+  . needs to have embeded database(H2 for rsdb , and flapdoodle for no sql) for testing to build
+- Embeded/in-memory MongoDB,Plapdoodle doesn't work with certain version of Spring boot. Spring boot 2.5 and later need to check documentation.
+  will cause mongo template error.(Use Testcontainers instead now) Plapdoodle is not MongoDB official , so it's not exact
+
+need a centralized place to store version of each dependecy in maven
+- pom property is where to put version number
+
+
+Mapstruct error with IntelliJ
+- version 1.3.1 final don't work with IntelliJ
+  There are several intellij bugs here. If I change the maven version 1.3.0.Final to 1.4.1.Final the intellij don't want to update the version.
+-
+might have issues with perssistance testing scope in pom.xml
+
+
+no H2 Testcontainers is not as performant as H2, but does give you the benefit of 100% database compatibility
+
+
+
+
+Pre-requist material:
+- Shell scripting
+  https://bash.cyberciti.biz/guide/Shebang
+  https://www.youtube.com/watch?v=v-F3YLd6oMw
+
+- docker
+- 

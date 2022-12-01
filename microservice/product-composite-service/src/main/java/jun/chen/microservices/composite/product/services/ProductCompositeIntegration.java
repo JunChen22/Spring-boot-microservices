@@ -58,8 +58,8 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
         this.mapper = mapper;
 
         productServiceUrl        = "http://" + productServiceHost + ":" + productServicePort + "/product/";
-        recommendationServiceUrl = "http://" + recommendationServiceHost + ":" + recommendationServicePort + "/recommendation?productId=";
-        reviewServiceUrl         = "http://" + reviewServiceHost + ":" + reviewServicePort + "/review?productId=";
+        recommendationServiceUrl = "http://" + recommendationServiceHost + ":" + recommendationServicePort + "/recommendation/";
+        reviewServiceUrl         = "http://" + reviewServiceHost + ":" + reviewServicePort + "/review/";
     }
 
 
@@ -131,7 +131,7 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
     public List<Recommendation> getRecommendations(int productId) {
 
         try {
-            String url = recommendationServiceUrl + "?productId=" + productId;
+            String url = recommendationServiceUrl  + productId;
 
             LOG.debug("Will call the getRecommendations API on URL: {}", url);
             List<Recommendation> recommendations = restTemplate.exchange(url, GET, null, new ParameterizedTypeReference<List<Recommendation>>() {}).getBody();
@@ -179,7 +179,7 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
     public List<Review> getReviews(int productId) {
 
         try {
-            String url = reviewServiceUrl + "?productId=" + productId;
+            String url = reviewServiceUrl + productId;
 
             LOG.debug("Will call the getReviews API on URL: {}", url);
             List<Review> reviews = restTemplate.exchange(url, GET, null, new ParameterizedTypeReference<List<Review>>() {}).getBody();
