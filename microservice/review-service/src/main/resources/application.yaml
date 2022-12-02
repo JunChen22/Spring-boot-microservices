@@ -26,6 +26,6 @@ logging:
 spring.profiles: docker
 
 spring.datasource:
-  url: jdbc:postgres://postgresql/reviewdb
+  url: jdbc:postgresql://postgres/reviewdb
 
 server.port: 8080

@@ -52,7 +52,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: spring
+      POSTGRES_DB: reviewdb
     ports:
       - "5432:5432"
     healthcheck:
