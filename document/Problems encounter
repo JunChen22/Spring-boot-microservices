@@ -9,3 +9,42 @@ https://www.youtube.com/watch?v=KNGQ9JBQWhQ
 solution:
 	submodule need to add "<relativepath >" refrence to the parent pom
 
+
+Problems I encountered Q and A
+
+- more configuration error rather than coding problem
+- Gradle to maven conversion
+- Pom multi module project ordering
+- docker can't build when perssistance is added, needs to have databaes running to build
+  . needs to have embeded database(H2 for rsdb , and flapdoodle for no sql) for testing to build
+ A: can do mvn clean package -DskipTests to skip the test or use embed database to do the test
+- Embeded/in-memory MongoDB,Plapdoodle doesn't work with certain version of Spring boot. Spring boot 2.5 and later need to check documentation.
+  will cause mongo template error.(Use Testcontainers instead now) Plapdoodle is not MongoDB official , so it's not exact
+
+need a centralized place to store version of each dependecy in maven
+- pom property is where to put version number
+
+
+Mapstruct error with IntelliJ
+- version 1.3.1 final don't work with IntelliJ
+  There are several intellij bugs here. If I change the maven version 1.3.0.Final to 1.4.1.Final the intellij don't want to update the version.
+-
+might have issues with perssistance testing scope in pom.xml
+
+
+
+the unit test the book provide doesn't really work with intelliJ
+- mapstruck error version 1.31 and intelliJ conflict
+- mapstruck setup processorPath error
+- java version 1.8 or above
+- gradle and maven difference
+
+
+no H2 Testcontainers is not as performant as H2, but does give you the benefit of 100% database compatibility
+
+
+
+
+
+
+
