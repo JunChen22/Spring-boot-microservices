@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # $which $SHELL to find where bash is located and write the shebang
-# ./grdelw clean build
+# mvn clean package
 # docker-compose build
 # docker-compose up -d
 #

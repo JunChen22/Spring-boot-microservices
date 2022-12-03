@@ -22,9 +22,7 @@ public class ReviewEntity {
     public ReviewEntity() {
     }
 
-    public ReviewEntity(int id, int version, int productId, int reviewId, String author, String subject, String content) {
-        this.id = id;
-        this.version = version;
+    public ReviewEntity(int productId, int reviewId, String author, String subject, String content) {
         this.productId = productId;
         this.reviewId = reviewId;
         this.author = author;
