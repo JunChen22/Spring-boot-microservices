@@ -61,7 +61,7 @@ spring.config.activate.on-profile: docker
 
 server.port: 8080
 
-spring.datasource.url: jdbc:mysql://mysql/review-db
+spring.datasource.url: jdbc:postgresql://postgres/reviewdb
 
 spring.rabbitmq.host: rabbitmq
 

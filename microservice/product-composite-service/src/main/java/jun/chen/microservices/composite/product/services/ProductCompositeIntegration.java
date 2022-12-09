@@ -81,7 +81,7 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
     @Override
     public Mono<Product> getProduct(int productId) {
 
-        String url = productServiceUrl + "/product/" + productId;
+        String url = productServiceUrl + "/" + productId;
         LOG.debug("Will call the getProduct API on URL: {}", url);
 
         return webClient.get().uri(url).retrieve().bodyToMono(Product.class)

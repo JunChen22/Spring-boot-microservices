@@ -22,8 +22,6 @@ import reactor.core.publisher.Mono;
 import static java.util.Collections.singletonList;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 
-
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -63,34 +61,6 @@ class ProductCompositeServiceApplicationTests {
 
 	@Test
 	void contextLoads() {}
-	@Test
-	void createCompositeProduct1() {
-
-		ProductAggregate compositeProduct = new ProductAggregate(1, "name", 1, null, null, null);
-
-		postAndVerifyProduct(compositeProduct, OK);
-	}
-
-	@Test
-	void createCompositeProduct2() {
-		ProductAggregate compositeProduct = new ProductAggregate(1, "name", 1,
-				singletonList(new RecommendationSummary(1, "a", 1, "c")),
-				singletonList(new ReviewSummary(1, "a", "s", "c")), null);
-
-		postAndVerifyProduct(compositeProduct, OK);
-	}
-
-	@Test
-	void deleteCompositeProduct() {
-		ProductAggregate compositeProduct = new ProductAggregate(1, "name", 1,
-				singletonList(new RecommendationSummary(1, "a", 1, "c")),
-				singletonList(new ReviewSummary(1, "a", "s", "c")), null);
-
-		postAndVerifyProduct(compositeProduct, OK);
-
-		deleteAndVerifyProduct(compositeProduct.getProductId(), OK);
-		deleteAndVerifyProduct(compositeProduct.getProductId(), OK);
-	}
 
 	@Test
 	void getProductById() {

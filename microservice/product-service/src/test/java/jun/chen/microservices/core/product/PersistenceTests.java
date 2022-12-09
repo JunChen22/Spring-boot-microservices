@@ -73,12 +73,14 @@ class PersistenceTests extends MongoDbTestBase{
                 .verifyComplete();
     }
 
+    /* TODO: duplicate error test
     @Test
     void duplicateError() {
         ProductEntity entity = new ProductEntity(savedEntity.getProductId(), "n", 1);
         StepVerifier.create(repository.save(entity)).expectError(DuplicateKeyException.class)
                 .verify();
     }
+    */
 
     @Test
     void optimisticLockError() {
