@@ -48,3 +48,5 @@ no H2 Testcontainers is not as performant as H2, but does give you the benefit o
 
 
 
+getting "Could not find class [org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration]" output
+A: missing actuator dependency. need it for health check

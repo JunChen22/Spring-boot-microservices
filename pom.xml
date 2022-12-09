@@ -30,6 +30,8 @@
 		<java.version>11</java.version>
 	</properties>
 
+	<!-- // TODO: fix the duplicated dependencies in composite product and core services-->
+	<!-- // TODO: add acutualtor to all core services to check health -->
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

@@ -1,27 +1,52 @@
 version: '2.1'
 
 services:
-  product:
+  product-p0:
     build: microservice/product-service
     mem_limit: 512m
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,streaming_instance_0
     depends_on:
       - postgres
 
-  recommendation:
+  product-p1:
+    build: microservice/product-service
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,streaming_instance_1
+    depends_on:
+      - postgres
+
+  recommendation-p0:
     build: microservice/recommendation-service
     mem_limit: 512m
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,streaming_instance_0
     depends_on:
       - mongodb
 
-  review:
+  recommendation-p1:
+    build: microservice/recommendation-service
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,streaming_instance_1
+    depends_on:
+      - mongodb
+
+  review-0:
     build: microservice/review-service
     mem_limit: 512m
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,streaming_instance_0
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  review-p1:
+    build: microservice/review-service
+    mem_limit: 512m
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,streaming_instance_1
     depends_on:
       postgres:
         condition: service_healthy
@@ -32,7 +57,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned
 
   mongodb:
     image: mongo:latest
