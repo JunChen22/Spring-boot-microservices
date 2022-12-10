@@ -44,6 +44,6 @@ public class RecommendationServiceApplication {
 		IndexResolver resolver = new MongoPersistentEntityIndexResolver(mappingContext);
 
 		ReactiveIndexOperations indexOps = mongoTemplate.indexOps(RecommendationEntity.class);
-		resolver.resolveIndexFor(RecommendationEntity.class).forEach(e -> indexOps.ensureIndex(e));
+		resolver.resolveIndexFor(RecommendationEntity.class).forEach(e -> indexOps.ensureIndex(e).block());
 	}
 }

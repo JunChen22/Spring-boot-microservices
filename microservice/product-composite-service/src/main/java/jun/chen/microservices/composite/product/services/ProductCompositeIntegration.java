@@ -112,7 +112,8 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
         // Return an empty result if something goes wrong to make it possible for the composite service to return
         // partial response
-        return webClient.get().uri(url).retrieve().bodyToFlux(Review.class).log(LOG.getName(), FINE)
+        return webClient.get().uri(url).retrieve().bodyToFlux(Review.class)
+                .log(LOG.getName(), FINE)
                 .onErrorResume(error -> empty());
     }
 
@@ -133,9 +134,8 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
     @Override
     public Mono<Recommendation> createRecommendation(Recommendation body) {
-        System.out.println("im at create recommendation");
         return Mono.fromCallable(() -> {
-            sendMessage("recommendations-out-0", new Event(CREATE, body.getRecommendationId(), body));
+            sendMessage("recommendations-out-0", new Event(CREATE, body.getProductId(), body));
             return body;
         }).subscribeOn(publishEventScheduler);
     }
@@ -178,6 +178,7 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
     private Mono<Health> getHealth(String url) {
         url += "/actuator/health";
+        System.out.println("im at " + url);
         LOG.debug("Will call the Health API on URL: {}", url);
         return webClient.get().uri(url).retrieve().bodyToMono(String.class)
                 .map(S -> new Health.Builder().up().build())
