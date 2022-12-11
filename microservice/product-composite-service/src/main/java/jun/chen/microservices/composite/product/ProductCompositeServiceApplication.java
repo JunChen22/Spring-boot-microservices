@@ -24,7 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @SpringBootApplication
-@ComponentScan("jun.chen.microservices.composite.product.services")
+@ComponentScan("jun.chen")
 public class ProductCompositeServiceApplication {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ProductCompositeServiceApplication.class);
@@ -82,21 +82,6 @@ public class ProductCompositeServiceApplication {
 	public Scheduler publishEventScheduler() {
 		LOG.info("Creates a messagingScheduler with connectionPoolSize = {}", threadPoolSize);
 		return Schedulers.newBoundedElastic(threadPoolSize, taskQueueSize, "publish-pool");
-	}
-
-	// TODO: @Autowire loop error unable to get health api injected
-	ProductCompositeIntegration integration;
-
-	@Bean
-	ReactiveHealthContributor coreServices() {
-
-		final Map<String, ReactiveHealthIndicator> registry = new LinkedHashMap<>();
-		System.out.println("im at coreservices");
-		registry.put("product", () -> integration.getProductHealth());
-		registry.put("recommendation", () -> integration.getRecommendationHealth());
-		registry.put("review", () -> integration.getReviewHealth());
-
-		return CompositeReactiveHealthContributor.fromMap(registry);
 	}
 
 	public static void main(String[] args) {

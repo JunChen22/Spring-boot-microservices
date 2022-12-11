@@ -106,4 +106,7 @@ Pre-requist material:
   https://www.youtube.com/watch?v=v-F3YLd6oMw
 
 - docker
-- 
+
+
+
+curl localhost:8080/actuator/health | jq
