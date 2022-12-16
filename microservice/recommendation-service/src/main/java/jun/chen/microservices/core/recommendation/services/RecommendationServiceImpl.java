@@ -64,7 +64,6 @@ public class RecommendationServiceImpl implements RecommendationService {
                         ex -> new InvalidInputException("Duplicate key, Product Id: " + body.getProductId() +
                                                         ", Recommendation Id: " + body.getRecommendationId()))
                 .map(e -> mapper.entityToApi(e));
-
         return newEntity;
     }
 

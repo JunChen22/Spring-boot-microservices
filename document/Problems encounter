@@ -55,3 +55,18 @@ A: missing actuator dependency. need it for health check
 
 circular loop with ProductIntegration autoweire with health check bean
 A: moved the health check bean into productIntegration class instead in applicaiton class
+
+
+
+
+mapstruct and lombok doesn't work together
+A: Maven only uses map struct processor and not lombok. need to change
+   something in the annotationProcessorPaths
+https://stackoverflow.com/questions/47676369/mapstruct-and-lombok-not-working-together
+
+
+
+
+test container import scope warning
+https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html
+https://github.com/testcontainers/testcontainers-java-spring-boot-quickstart/blob/main/pom.xml

@@ -1,2 +1,1 @@
-TODO: change it to loose coupling, non-blocking synchronous API and event-driven asynchronous services
-TODO: make sure the endpoints in the product composite integeration class is correct
+TODO: update the dependencies in all pom files. reduce the redudent dependeices.
