@@ -12,7 +12,7 @@
 	<groupId>jun.chen.springcloud</groupId>
 	<artifactId>eureka-server</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>eurekaserver</name>
+	<name>eureka-server</name>
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
