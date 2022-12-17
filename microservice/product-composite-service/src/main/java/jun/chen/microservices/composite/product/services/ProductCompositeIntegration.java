@@ -48,10 +48,9 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
     private final WebClient webClient;
     private final ObjectMapper mapper;
-
-    private final String productServiceUrl;
-    private final String recommendationServiceUrl;
-    private final String reviewServiceUrl;
+    private final String productServiceUrl = "http://product";
+    private final String recommendationServiceUrl = "http://recommendation";
+    private final String reviewServiceUrl = "http://review";
 
     private final StreamBridge streamBridge;
 
@@ -61,28 +60,15 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
     public ProductCompositeIntegration(
             @Qualifier("publishEventScheduler") Scheduler publishEventScheduler,
 
-            WebClient.Builder webclient,
+            WebClient.Builder webClientBuilder,
             ObjectMapper mapper,
-            StreamBridge streamBridge,
-
-            @Value("${app.product-service.host}") String productServiceHost,
-            @Value("${app.product-service.port}") int    productServicePort,
-
-            @Value("${app.recommendation-service.host}") String recommendationServiceHost,
-            @Value("${app.recommendation-service.port}") int    recommendationServicePort,
-
-            @Value("${app.review-service.host}") String reviewServiceHost,
-            @Value("${app.review-service.port}") int    reviewServicePort
+            StreamBridge streamBridge
     ) {
 
         this.publishEventScheduler = publishEventScheduler;
-        this.webClient = webclient.build();
+        this.webClient = webClientBuilder.build();
         this.mapper = mapper;
         this.streamBridge = streamBridge;
-
-        productServiceUrl        = "http://" + productServiceHost + ":" + productServicePort;
-        recommendationServiceUrl = "http://" + recommendationServiceHost + ":" + recommendationServicePort;
-        reviewServiceUrl         = "http://" + reviewServiceHost + ":" + reviewServicePort;
     }
 
     @Override
@@ -156,7 +142,6 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
 
     @Override
     public Mono<Review> createReview(Review body) {
-        System.out.println();
         return Mono.fromCallable(() -> {
             sendMessage("reviews-out-0", new Event(CREATE, body.getProductId(), body));
             return body;
@@ -184,8 +169,8 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
     }
 
     private Mono<Health> getHealth(String url) {
+
         url += "/actuator/health";
-        System.out.println("im at " + url);
         LOG.debug("Will call the Health API on URL: {}", url);
         return webClient.get().uri(url).retrieve().bodyToMono(String.class)
                 .map(S -> new Health.Builder().up().build())

@@ -22,7 +22,9 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-@SpringBootTest(webEnvironment = RANDOM_PORT)
+@SpringBootTest(webEnvironment = RANDOM_PORT, properties = {
+		"eureka.client.enabled=false"
+})
 class ProductServiceApplicationTests extends MongoDbTestBase{
 	@Autowired
 	private WebTestClient client;
@@ -58,6 +60,7 @@ class ProductServiceApplicationTests extends MongoDbTestBase{
     /* TODO: duplicate error test
 	@Test
 	void duplicateError() {
+
 		int productId = 1;
 
 		assertNull(repository.findByProductId(productId).block());

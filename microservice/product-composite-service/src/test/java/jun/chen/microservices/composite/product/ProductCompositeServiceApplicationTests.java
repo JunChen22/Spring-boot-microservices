@@ -27,7 +27,9 @@ import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static reactor.core.publisher.Mono.just;
 
-@SpringBootTest(webEnvironment = RANDOM_PORT)
+@SpringBootTest(webEnvironment = RANDOM_PORT, properties = {
+		"eureka.client.enabled=false"
+})
 class ProductCompositeServiceApplicationTests {
 
 	private static final int PRODUCT_ID_OK = 1;
@@ -95,20 +97,5 @@ class ProductCompositeServiceApplicationTests {
 				.expectStatus().isEqualTo(expectedStatus)
 				.expectHeader().contentType(APPLICATION_JSON)
 				.expectBody();
-	}
-
-	private void postAndVerifyProduct(ProductAggregate compositeProduct, HttpStatus expectedStatus) {
-		client.post()
-				.uri("/product-composite")
-				.body(just(compositeProduct), ProductAggregate.class)
-				.exchange()
-				.expectStatus().isEqualTo(expectedStatus);
-	}
-
-	private void deleteAndVerifyProduct(int productId, HttpStatus expectedStatus) {
-		client.delete()
-				.uri("/product-composite/" + productId)
-				.exchange()
-				.expectStatus().isEqualTo(expectedStatus);
 	}
 }

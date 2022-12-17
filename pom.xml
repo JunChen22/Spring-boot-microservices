@@ -37,10 +37,6 @@
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webflux</artifactId>
 		</dependency>
@@ -64,7 +60,6 @@
 			<artifactId>spring-cloud-starter-stream-kafka</artifactId>
 			<version>3.1.5</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
@@ -75,6 +70,17 @@
 			<artifactId>testcontainers</artifactId>
 			<version>1.17.6</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-test</artifactId>
+			<version>3.4.13</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+			<version>3.1.4</version>
 		</dependency>
 	</dependencies>
 
@@ -90,14 +96,6 @@
 				<artifactId>api</artifactId>
 				<version>0.0.1-SNAPSHOT</version>
 			</dependency>
-			<dependency>
-				<groupId>io.projectreactor</groupId>
-				<artifactId>reactor-test</artifactId>
-				<version>3.4.13</version>
-				<scope>test</scope>
-			</dependency>
-
-
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-data-mongodb-reactive</artifactId>

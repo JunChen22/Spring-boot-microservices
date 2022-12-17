@@ -7,7 +7,7 @@ Maven related
 https://www.youtube.com/watch?v=KNGQ9JBQWhQ
 
 solution:
-	submodule need to add "<relativepath >" refrence to the parent pom
+	submodule need to add "<relative path >" reference to the parent pom
 
 
 Problems I encountered Q and A
@@ -15,13 +15,13 @@ Problems I encountered Q and A
 - more configuration error rather than coding problem
 - Gradle to maven conversion
 - Pom multi module project ordering
-- docker can't build when perssistance is added, needs to have databaes running to build
-  . needs to have embeded database(H2 for rsdb , and flapdoodle for no sql) for testing to build
+- docker can't build when persistence is added, needs to have database running to build
+  . needs to have embedded database(H2 for RSDB , and flap-doodle for no sql) for testing to build
  A: can do mvn clean package -DskipTests to skip the test or use embed database to do the test
-- Embeded/in-memory MongoDB,Plapdoodle doesn't work with certain version of Spring boot. Spring boot 2.5 and later need to check documentation.
+- Embedded/in-memory MongoDB,Plapdoodle doesn't work with certain version of Spring boot. Spring boot 2.5 and later need to check documentation.
   will cause mongo template error.(Use Testcontainers instead now) Plapdoodle is not MongoDB official , so it's not exact
 
-need a centralized place to store version of each dependecy in maven
+need a centralized place to store version of each dependency in maven
 - pom property is where to put version number
 
 
@@ -29,18 +29,18 @@ Mapstruct error with IntelliJ
 - version 1.3.1 final don't work with IntelliJ
   There are several intellij bugs here. If I change the maven version 1.3.0.Final to 1.4.1.Final the intellij don't want to update the version.
 -
-might have issues with perssistance testing scope in pom.xml
+might have issues with persistence testing scope in pom.xml
 
 
 
 the unit test the book provide doesn't really work with intelliJ
-- mapstruck error version 1.31 and intelliJ conflict
-- mapstruck setup processorPath error
+- mapstruct error version 1.31 and intelliJ conflict
+- mapstruct setup processorPath error
 - java version 1.8 or above
 - gradle and maven difference
 
 
-no H2 Testcontainers is not as performant as H2, but does give you the benefit of 100% database compatibility
+no H2 Test containers is not as performant as H2, but does give you the benefit of 100% database compatibility
 
 
 
@@ -54,7 +54,7 @@ A: missing actuator dependency. need it for health check
 
 
 circular loop with ProductIntegration autoweire with health check bean
-A: moved the health check bean into productIntegration class instead in applicaiton class
+A: moved the health check bean into productIntegration class instead in application class
 
 
 
@@ -70,3 +70,24 @@ https://stackoverflow.com/questions/47676369/mapstruct-and-lombok-not-working-to
 test container import scope warning
 https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html
 https://github.com/testcontainers/testcontainers-java-spring-boot-quickstart/blob/main/pom.xml
+
+
+intelliJ: java outside of source root problem. IntelliJ don't auto import.
+A: One way to do this afterwards is to right-click on the pom.xml file in the root directory,
+and select 'Add as maven project'.
+Then the folders will be marked correctly, and dependent libraries will be imported.
+There should be no need to mark individual source folders manually.
+https://stackoverflow.com/questions/63521181/java-file-outside-of-source-root-intellij
+
+
+
+Messaging test failure in product-composite service.
+A: Caused by not enough threads in thread pool allocated. all those test are synchronous requests and it takes a thread each
+   and default thread pool is 10 and I set it to 2 and it caused messaging test error/failure
+
+random services evict from eureka server when running test script
+A: error code 137, not enough memory, but i set it to 512mb still not enough...
+    docker stats
+    core services memory usage average 95%+ and that's at 512mb
+    it service will crash after I ran the test script after discovery service is added. 800mb won't work
+    set it to 1024mb it barely works at 99% memory usage in some services.

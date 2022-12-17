@@ -19,6 +19,10 @@ $ docker-compose build
 $ docker-compose up
 $ setup-test.bash    # setup test data and simple test
 
+$ export COMPOSE_FILE=docker-compose-partitions.yml // or other docker-compose files
+$ docker-compose build
+$ docker-compose up
+$ unset COMPOSE_FILE
 
 ```
 Spring-boot-microservice 
@@ -99,8 +103,15 @@ curl localhost:8080/product-composite/1 | jq
 curl -X "DELETE" localhost:8080/product-composite/1
 
 
+testing other docker-compose needs to post a productId 2 request
 
-Pre-requist material:
+
+
+could also scale up a particular service in docker
+$ docker-compose up -d --scale review=2
+
+
+material:
 - Shell scripting
   https://bash.cyberciti.biz/guide/Shebang
   https://www.youtube.com/watch?v=v-F3YLd6oMw

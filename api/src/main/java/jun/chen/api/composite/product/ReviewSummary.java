@@ -1,8 +1,6 @@
 package jun.chen.api.composite.product;
 
-import lombok.Getter;
 
-@Getter
 public class ReviewSummary {
 
     private final int reviewId;
@@ -15,5 +13,21 @@ public class ReviewSummary {
         this.author = author;
         this.subject = subject;
         this.content = content;
+    }
+
+    public int getReviewId() {
+        return reviewId;
+    }
+
+    public String getAuthor() {
+        return author;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public String getContent() {
+        return content;
     }
 }

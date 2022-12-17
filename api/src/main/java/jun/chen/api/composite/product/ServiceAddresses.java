@@ -1,8 +1,6 @@
 package jun.chen.api.composite.product;
 
-import lombok.Getter;
 
-@Getter
 public class ServiceAddresses {
     private final String cmp;
     private final String pro;
@@ -21,5 +19,21 @@ public class ServiceAddresses {
         this.pro = productAddress;
         this.rev = reviewAddress;
         this.rec = recommendationAddress;
+    }
+
+    public String getCmp() {
+        return cmp;
+    }
+
+    public String getPro() {
+        return pro;
+    }
+
+    public String getRev() {
+        return rev;
+    }
+
+    public String getRec() {
+        return rec;
     }
 }

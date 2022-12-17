@@ -1,1 +1,5 @@
-TODO: update the dependencies in all pom files. reduce the redudent dependeices.
+TODO: high memory usage in docker causing services to crash(exit code 137) to crash
+      find what cause high memory usage and reduce memory usage.
+
+      1. could be shared dependency that cause these
+      2. could  be my dockerfile didn't said to remove unnecessary stuff when building from maven
