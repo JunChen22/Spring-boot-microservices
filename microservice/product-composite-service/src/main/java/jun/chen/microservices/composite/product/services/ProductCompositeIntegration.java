@@ -15,13 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.health.CompositeReactiveHealthContributor;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.ReactiveHealthContributor;
-import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.cloud.stream.function.StreamBridge;
-import org.springframework.context.annotation.Bean;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
@@ -36,8 +30,6 @@ import static jun.chen.api.event.Event.Type.CREATE;
 import static jun.chen.api.event.Event.Type.DELETE;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static reactor.core.publisher.Flux.empty;
 
@@ -156,28 +148,6 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
                 .subscribeOn(publishEventScheduler).then();
     }
 
-    public Mono<Health> getProductHealth() {
-        return getHealth(productServiceUrl);
-    }
-
-    public Mono<Health> getRecommendationHealth() {
-        return getHealth(recommendationServiceUrl);
-    }
-
-    public Mono<Health> getReviewHealth() {
-        return getHealth(reviewServiceUrl);
-    }
-
-    private Mono<Health> getHealth(String url) {
-
-        url += "/actuator/health";
-        LOG.debug("Will call the Health API on URL: {}", url);
-        return webClient.get().uri(url).retrieve().bodyToMono(String.class)
-                .map(S -> new Health.Builder().up().build())
-                .onErrorResume(ex -> Mono.just(new Health.Builder().down(ex).build()))
-                .log(LOG.getName(), FINE);
-    }
-
     private void sendMessage(String bindingName, Event event) {
         LOG.debug("Sending a {} message to {}", event.getEventType(), bindingName);
         Message message = MessageBuilder.withPayload(event)
@@ -215,17 +185,5 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
         } catch (IOException ioex) {
             return ex.getMessage();
         }
-    }
-
-    @Bean
-    ReactiveHealthContributor coreServices() {
-
-        final Map<String, ReactiveHealthIndicator> registry = new LinkedHashMap<>();
-
-        registry.put("product", () -> getProductHealth());
-        registry.put("recommendation", () -> getRecommendationHealth());
-        registry.put("review", () -> getReviewHealth());
-
-        return CompositeReactiveHealthContributor.fromMap(registry);
     }
 }

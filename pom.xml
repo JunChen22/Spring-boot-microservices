@@ -17,6 +17,8 @@
 		<module>microservice/review-service</module>
 		<module>util</module>
 		<module>api</module>
+		<module>spring-cloud/gateway</module>
+		<module>spring-cloud/eureka-server</module>
 	</modules>
 
 	<parent>

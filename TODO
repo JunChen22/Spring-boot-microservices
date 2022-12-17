@@ -3,3 +3,8 @@ TODO: high memory usage in docker causing services to crash(exit code 137) to cr
 
       1. could be shared dependency that cause these
       2. could  be my dockerfile didn't said to remove unnecessary stuff when building from maven
+
+
+  TODO: when building with docker-compose, the spring-cloud container need to be separate
+        maven package then you can use docker-compose. need to change it to easier
+        maybe add it to the parent pom as sub module
