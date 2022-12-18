@@ -111,6 +111,26 @@ could also scale up a particular service in docker
 $ docker-compose up -d --scale review=2
 
 
+
+
+
+Testing urls
+curl http://localhost:8080/actuator/gateway/routes -s | jq # to see all the routes in the edge server/gateway
+
+http://localhost:8080/eureka/web
+or see what running on eureka in command line
+curl -H "accept:application/json" localhost:8080/eureka/api/apps -s | jq -r .applications.application[].instance[].instanceId
+
+
+other url for testing for the edge server, it connects to http://httpstat.us/ for api test
+curl http://localhost:8080/headerrouting -H "Host: i.feel.lucky:8080"   # code 200 ok
+
+curl http://localhost:8080/headerrouting -H "Host: im.a.teapot:8080"    # code 418
+
+curl http://localhost:8080/headerrouting                                # code 501
+
+
+
 material:
 - Shell scripting
   https://bash.cyberciti.biz/guide/Shebang

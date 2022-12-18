@@ -61,6 +61,8 @@ server.error.include-message: always
 
 spring.application.name: product-composite
 
+server.forward-headers-strategy: framework
+
 app.eureka-server: localhost
 eureka.server.port: 8761
 
