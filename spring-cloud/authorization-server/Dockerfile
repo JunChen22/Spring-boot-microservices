@@ -1,4 +1,4 @@
 FROM adoptopenjdk:16_36-jre-hotspot
-EXPOSE 8761
+EXPOSE 9999
 ADD ./target/*.jar app.jar
 ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -137,7 +137,13 @@ material:
   https://www.youtube.com/watch?v=v-F3YLd6oMw
 
 - docker
-
+- https://www.baeldung.com/spring-security-oauth-auth-server
 
 
 curl localhost:8080/actuator/health | jq
+
+need to add TestSecurityConfig.class to disable security in test
+
+use this command to create self-signed certificate 
+$ keytool -genkeypair -alias localhost -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore edge.p12 -validity 3650
+it generates edge.p12 file in gateway.../resource/keystore/

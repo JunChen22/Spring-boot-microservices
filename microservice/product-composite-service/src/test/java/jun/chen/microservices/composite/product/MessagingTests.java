@@ -37,7 +37,12 @@ import static reactor.core.publisher.Mono.just;
 
 @SpringBootTest(
         webEnvironment = RANDOM_PORT,
-        properties = {"spring.main.allow-bean-definition-overriding=true"})
+        classes = {TestSecurityConfig.class},
+        properties = {
+                "spring.security.oauth2.resourceserver.jwt.issuer-uri=",
+                "spring.main.allow-bean-definition-overriding=true",
+                "spring.main.allow-bean-definition-overriding=true"
+        })
 @Import({TestChannelBinderConfiguration.class})
 public class MessagingTests {
 

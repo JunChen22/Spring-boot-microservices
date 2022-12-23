@@ -27,9 +27,15 @@ import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static reactor.core.publisher.Mono.just;
 
-@SpringBootTest(webEnvironment = RANDOM_PORT, properties = {
-		"eureka.client.enabled=false"
-})
+@SpringBootTest(
+		webEnvironment = RANDOM_PORT,
+		classes = {TestSecurityConfig.class},
+		properties = {
+			"spring.security.oauth2.resourceserver.jwt.issuer-uri=",
+			"spring.main.allow-bean-definition-overriding=true",
+			"eureka.client.enabled=false"
+		}
+)
 class ProductCompositeServiceApplicationTests {
 
 	private static final int PRODUCT_ID_OK = 1;

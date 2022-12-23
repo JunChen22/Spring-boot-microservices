@@ -9,13 +9,16 @@ spring.data.mongodb:
 
 spring.application.name: product
 
-app.eureka-server: localhost
-app.eureka-server.port: 8761
+app:
+  eureka-username: u
+  eureka-password: p
+  eureka-server: localhost
+
 
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://${app.eureka-server}:${app.eureka-server.port}/eureka/
+      defaultZone: "http://${app.eureka-username}:${app.eureka-password}@${app.eureka-server}:8761/eureka/"
     initialInstanceInfoReplicationIntervalSeconds: 5
     registryFetchIntervalSeconds: 5
   instance:

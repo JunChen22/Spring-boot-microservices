@@ -65,8 +65,6 @@ A: Maven only uses map struct processor and not lombok. need to change
 https://stackoverflow.com/questions/47676369/mapstruct-and-lombok-not-working-together
 
 
-
-
 test container import scope warning
 https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html
 https://github.com/testcontainers/testcontainers-java-spring-boot-quickstart/blob/main/pom.xml
@@ -91,3 +89,32 @@ A: error code 137, not enough memory, but i set it to 512mb still not enough...
     core services memory usage average 95%+ and that's at 512mb
     it service will crash after I ran the test script after discovery service is added. 800mb won't work
     set it to 1024mb it barely works at 99% memory usage in some services.
+
+It seems like changing from JDK 11 jre to JDK 16 lower the memory usage from 900mb to closer to 300mb
+from adoptopenjdk:11-jre-hotspot to adoptopenjdk:16_36-jre-hotspot
+
+Docker-compose hung up and no out put all services are up except for core services.
+A: those services can only start when it's depended services are up and reported healthy.
+   depending on the version of the image, the health check command won't work and won't report
+   healthy so the core services will just hung there. For example, I changed mongodb image
+   version from 4.x.x to latest version (6.x.x) and it just hung there because mongodb container
+   only report "health:starting"" when it needed "healthy". And it would take approximately 40 seconds
+   for rabbitMQ to get it ready and report healthy
+
+
+TODO: look into this further
+can build but can't start gateway container with SSL certificate e.g. edge.p12
+when gateway container start it exit 1 with "Could not load key store 'classpath:keystore/edge.p12" error.
+A: it doesn't work wit the JDK 11 image I used it to build the container. It worked with it's JDK 16
+
+SSL certificate related problems might be password incorrect when creating it.
+It needs to match to the one provided to gateway application.yml file.
+
+creating SSL certificate command.
+$ keytool -genkeypair -alias localhost -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore edge.p12 -validity 3650
+
+
+
+
+
+
