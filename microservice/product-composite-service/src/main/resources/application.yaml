@@ -131,6 +131,8 @@ logging:
     org.springframework.web.server.adapter.HttpWebHandlerAdapter: TRACE
 
 spring.security.oauth2.resourceserver.jwt.issuer-uri: http://${app.auth-server}:9999
+# if you want to change from local authorization server to Auth0 : https://${TENANT}/
+# spring.security.oauth2.resourceserver.jwt.issuer-uri: https://dev-junc.us.auth0.com/
 
 ---
 

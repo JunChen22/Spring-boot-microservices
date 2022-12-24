@@ -5,6 +5,10 @@
 # ECHO COMMAND
 # echo Hello World!
 
+# needs to make the script executable
+# chmod +x script.sh
+
+
 # VARIABLES
 # Uppercase by convention
 # Letters, numbers, underscores
