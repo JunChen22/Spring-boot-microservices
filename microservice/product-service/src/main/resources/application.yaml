@@ -30,7 +30,7 @@ logging:
   level:
     root: INFO
     jun.chen: DEBUG
-    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+    org.springframework.data.mongodb.core.ReactiveMongoTemplate: DEBUG
 
 spring.cloud.function.definition: messageProcessor
 

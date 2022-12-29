@@ -47,5 +47,4 @@ class EurekaserverApplicationTests {
 		assertEquals(HttpStatus.OK, entity.getStatusCode());
 		assertEquals(expectedResponseBody, entity.getBody());
 	}
-
 }

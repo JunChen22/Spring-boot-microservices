@@ -118,3 +118,9 @@ $ keytool -genkeypair -alias localhost -keyalg RSA -keysize 2048 -storetype PKCS
 
 
 
+springdoc version need to be the same. API package and product-compose
+
+
+
+com.netflix.discovery.shared.resolver.EurekaEndpoint
+caused by different eureka version. one is starter one is not.
