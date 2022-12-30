@@ -57,7 +57,6 @@
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
 		</dependency>
 
-
 		<!-- unit test related -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

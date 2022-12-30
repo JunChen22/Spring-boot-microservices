@@ -9,8 +9,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 
+
 @Configuration
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
     private final String username;
     private final String password;
@@ -37,10 +38,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 // Disable CRCF to allow services to register themselves with Eureka
                 .csrf()
-                    .disable()
+                .disable()
                 .authorizeRequests()
-                    .anyRequest().authenticated()
-                    .and()
-                    .httpBasic();
+                .anyRequest().authenticated()
+                .and()
+                .httpBasic();
     }
 }

@@ -15,8 +15,6 @@ springdoc:
     authorizationUrl: https://localhost:8443/oauth2/authorize
     tokenUrl: https://localhost:8443/oauth2/token
 
-
-
 api:
   common:
     version: 1.0.0
@@ -68,28 +66,11 @@ api:
         Entities for product information, recommendations and reviews related to the specified productId will be deleted.
         The implementation of the delete method is idempotent, i.e. it can be called several times with the same response.
         This means that a delete request of a non-existing product will return **200 Ok**.
+
 server.port: 7000
 server.error.include-message: always
 
-spring.application.name: product-composite
-
 server.forward-headers-strategy: framework
-
-app:
-  eureka-username: u
-  eureka-password: p
-  eureka-server: localhost
-  auth-server: localhost
-
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: "http://${app.eureka-username}:${app.eureka-password}@${app.eureka-server}:8761/eureka/"
-    initialInstanceInfoReplicationIntervalSeconds: 5
-    registryFetchIntervalSeconds: 5
-  instance:
-    leaseRenewalIntervalInSeconds: 5
-    leaseExpirationDurationInSeconds: 5
 
 spring.cloud.stream:
   defaultBinder: rabbit
@@ -108,19 +89,9 @@ spring.cloud.stream:
       producer:
         required-groups: auditGroup
 
-
-spring.cloud.stream.kafka.binder:
-  brokers: 127.0.0.1
-  defaultBrokerPort: 9092
-
-spring.rabbitmq:
-  host: 127.0.0.1
-  port: 5672
-  username: guest
-  password: guest
-
-management.endpoint.health.show-details: "ALWAYS"
-management.endpoints.web.exposure.include: "*"
+#spring.security.oauth2.resourceserver.jwt.issuer-uri: http://${app.auth-server}:9999
+# if you want to change from local authorization server to Auth0 : https://${TENANT}/
+# spring.security.oauth2.resourceserver.jwt.issuer-uri: https://dev-junc.us.auth0.com/
 
 #TODO: figure this out
 logging:
@@ -129,23 +100,11 @@ logging:
     jun.chen: DEBUG
     org.springframework.web.server.adapter.HttpWebHandlerAdapter: TRACE
 
-spring.security.oauth2.resourceserver.jwt.issuer-uri: http://${app.auth-server}:9999
-# if you want to change from local authorization server to Auth0 : https://${TENANT}/
-# spring.security.oauth2.resourceserver.jwt.issuer-uri: https://dev-junc.us.auth0.com/
-
 ---
 
 spring.config.activate.on-profile: docker
 
 server.port: 8080
-
-spring.rabbitmq.host: rabbitmq
-
-spring.cloud.stream.kafka.binder.brokers: kafka
-
-app:
-  eureka-server: eureka
-  auth-server: auth-server
 
 ---
 spring.config.activate.on-profile: streaming_partitioned
@@ -161,11 +120,3 @@ spring.cloud.stream.bindings.recommendations-out-0.producer:
 spring.cloud.stream.bindings.reviews-out-0.producer:
   partition-key-expression: headers['partitionKey']
   partition-count: 2
-
----
-spring.config.activate.on-profile: kafka
-
-management.health.rabbit.enabled: false
-spring.cloud.stream.defaultBinder: kafka
-spring.kafka.bootstrap-servers: kafka:9092
-spring.cloud.stream.kafka.binder.replication-factor: 1

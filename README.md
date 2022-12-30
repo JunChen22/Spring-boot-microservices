@@ -1,4 +1,5 @@
 # Spring-boot-microservices
+[![Java CI with Maven](https://github.com/JunChen22/Spring-boot-microservices/actions/workflows/maven.yml/badge.svg)](https://github.com/JunChen22/Spring-boot-microservices/actions/workflows/maven.yml)
 
 Simple microservice project from Hands-On Microservices with Spring Boot and Spring Cloud By Magnus Larsson.
 . Major difference is Maven instead of Gradle and Postgres instead of MySQL.

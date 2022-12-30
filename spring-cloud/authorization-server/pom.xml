@@ -33,6 +33,17 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-config</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.retry</groupId>
+			<artifactId>spring-retry</artifactId>
+		</dependency>
+
+
+		<dependency>
 			<groupId>org.springframework.security.experimental</groupId>
 			<artifactId>spring-security-oauth2-authorization-server</artifactId>
 			<version>0.1.0</version>

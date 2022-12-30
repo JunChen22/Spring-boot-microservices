@@ -27,7 +27,9 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 @SpringBootTest(webEnvironment = RANDOM_PORT, properties = {
 		"spring.cloud.stream.defaultBinder=rabbit",
 		"logging.level.jun.chen=DEBUG",
-		"eureka.client.enabled=false"
+		"eureka.client.enabled=false",
+		"spring.jpa.hibernate.ddl-auto=update",
+		"spring.cloud.config.enabled=false"
 })
 class ReviewServiceApplicationTests extends PostgresTestBase{
 
