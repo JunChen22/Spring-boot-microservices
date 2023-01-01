@@ -36,7 +36,11 @@ public interface ProductCompositeService {
     @GetMapping(
             value = "/product-composite/{productId}",
             produces = "application/json")
-    Mono<ProductAggregate> getProduct(@PathVariable int productId);
+    Mono<ProductAggregate> getProduct(
+            @PathVariable int productId,
+            @RequestParam(value = "delay", required = false, defaultValue = "0") int delay,
+            @RequestParam(value = "faultPercent", required = false, defaultValue = "0") int faultPercent
+    );
 
     @Operation(
             summary = "${api.product-composite.delete-composite-product.description}",

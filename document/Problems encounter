@@ -114,7 +114,20 @@ creating SSL certificate command.
 $ keytool -genkeypair -alias localhost -keyalg RSA -keysize 2048 -storetype PKCS12 -keystore edge.p12 -validity 3650
 
 
+maven package failed with 2 minute plus at a single module could be util or product-composite module.
+A: poor internet connection can cause maven to be unable to get the dependencies it needs in a timely fashion.
+   It will stop the build process and return error.
+   I got these error when there's outage in my area from my ISP. On PC it builds fine but won't work on laptop and
+   raspberry pi. It should build fine in github action.
 
+
+spring cloud config server version and java version compatibility error
+4.0.0 doesnt work will have error code like
+
+
+spring boot version not compatible with spring cloud release train
+2.6.2 not working need 2.4.x or 2.5.x versions
+https://spring.io/projects/spring-cloud
 
 
 
@@ -124,3 +137,9 @@ springdoc version need to be the same. API package and product-compose
 
 com.netflix.discovery.shared.resolver.EurekaEndpoint
 caused by different eureka version. one is starter one is not.
+
+
+
+
+
+

@@ -133,6 +133,37 @@ spring.security.oauth2.resourceserver.jwt.issuer-uri: http://${app.auth-server}:
 # if you want to change from local authorization server to Auth0 : https://${TENANT}/
 # spring.security.oauth2.resourceserver.jwt.issuer-uri: https://dev-junc.us.auth0.com/
 
+resilience4j:
+  timelimiter:
+    instances:
+      product:
+        timeoutDuration: 2s
+
+  retry:
+    instances:
+      product:
+        maxAttempts: 3
+        waitDuration: 1000
+        retryExceptions:
+          - org.springframework.web.reactive.function.client.WebClientResponseException$InternalServerError
+
+  circuitbreaker:
+    instances:
+      product:
+        allowHealthIndicatorToFail: false
+        registerHealthIndicator: true
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        ignoreExceptions:
+          - jun.chen.util.exceptions.InvalidInputException
+          - jun.chen.util.exceptions.NotFoundException
+
+management.health.circuitbreakers.enabled: true
+
 ---
 
 spring.config.activate.on-profile: docker

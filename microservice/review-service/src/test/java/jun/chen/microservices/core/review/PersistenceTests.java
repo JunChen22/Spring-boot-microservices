@@ -20,7 +20,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest(properties = {
-        "spring.jpa.hibernate.ddl-auto=update", "spring.cloud.config.enabled=false"
+        "spring.jpa.hibernate.ddl-auto=update",
+        "spring.cloud.config.enabled=false"
 })
 @Transactional(propagation = NOT_SUPPORTED)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)

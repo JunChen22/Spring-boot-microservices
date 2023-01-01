@@ -1,4 +1,4 @@
 TODO: add gRPC and test and performance/speed difference between REST API.
 
-TODO: fix duplicate dependencies in all pom.xml files
-      and reduce/dependence management
+TODO: add spring cloud config to the core services.
+
