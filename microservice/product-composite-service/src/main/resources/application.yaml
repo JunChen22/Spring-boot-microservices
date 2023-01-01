@@ -108,6 +108,11 @@ spring.cloud.stream:
       producer:
         required-groups: auditGroup
 
+spring.zipkin.sender.type: rabbit
+spring.sleuth.sampler.probability: 1.0
+
+
+
 
 spring.cloud.stream.kafka.binder:
   brokers: 127.0.0.1
@@ -200,3 +205,4 @@ management.health.rabbit.enabled: false
 spring.cloud.stream.defaultBinder: kafka
 spring.kafka.bootstrap-servers: kafka:9092
 spring.cloud.stream.kafka.binder.replication-factor: 1
+spring.zipkin.sender.type: kafka
