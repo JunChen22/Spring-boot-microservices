@@ -91,6 +91,9 @@ spring.security.oauth2.resourceserver.jwt.issuer-uri: http://${app.auth-server}:
 # if you want to change from local authorization server to Auth0 : https://${TENANT}/
 #spring.security.oauth2.resourceserver.jwt.issuer-uri: https://dev-junc.us.auth0.com/
 
+
+spring.sleuth.reactor.instrumentation-type: decorate-on-last
+
 logging:
   level:
     root: INFO

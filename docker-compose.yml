@@ -104,8 +104,8 @@ services:
     build: spring-cloud/gateway
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SERVER_SSL_KEY_STORE=file:/keystore/edge-test.p12
-      - SERVER_SSL_KEY_STORE_PASSWORD=testtest
+      - SERVER_SSL_KEY_STORE=file:/keystore/edge.p12
+      - SERVER_SSL_KEY_STORE_PASSWORD=password
       - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
       - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
     volumes:
