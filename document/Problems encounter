@@ -142,4 +142,10 @@ caused by different eureka version. one is starter one is not.
 
 
 
+could not get core services to work with spring cloud config.
 
+it constant giving error.
+- it doesn't build or pass the unit test.
+- it works in gradle but not maven.
+- it works with removed the spring.config.import: "configserver:"
+- but when it's removed it doesn't run on docker
