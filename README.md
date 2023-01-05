@@ -461,6 +461,50 @@ it generates edge.p12 file in gateway.../resource/keystore/
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+To get configuration file of each services
+
+/{application}/{profile}[/{label}]
+/{application}-{profile}.yml
+/{label}/{application}-{profile}.yml
+/{application}-{profile}.properties
+/{label}/{application}-{profile}.properties
+
+
+curl https://dev-usr:dev-pwd@localhost:8443/config/gateway/docker -ks | jq
+curl https://dev-usr:dev-pwd@localhost:8443/config/eureka-server/docker -ks | jq
+curl https://dev-usr:dev-pwd@localhost:8443/config/auth-server/docker -ks | jq
+
+
+
+curl https://dev-usr:dev-pwd@localhost:8443/config/product-composite/docker -ks | jq
+curl https://dev-usr:dev-pwd@localhost:8443/config/product/docker -ks | jq
+curl https://dev-usr:dev-pwd@localhost:8443/config/recommendation/docker -ks | jq
+curl https://dev-usr:dev-pwd@localhost:8443/config/review/docker -ks | jq
+
+
+curl https://dev-usr:dev-pwd@localhost:8443/config/application/default -ks | jq
+
+
+
+
+get health point of urls in config
+curl -k https://dev-usr:dev-pwd@localhost:8443/config/actuator | jq
+
+
+
+
 ### material:
 - Shell scripting
   https://bash.cyberciti.biz/guide/Shebang

@@ -149,3 +149,8 @@ it constant giving error.
 - it works in gradle but not maven.
 - it works with removed the spring.config.import: "configserver:"
 - but when it's removed it doesn't run on docker
+
+
+
+encrypt and decrypt endpoint in spring cloud config server not exist/no output
+A:

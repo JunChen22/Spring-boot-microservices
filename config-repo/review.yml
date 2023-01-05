@@ -3,21 +3,6 @@ server.error.include-message: always
 
 spring.application.name: review
 
-app:
-  eureka-username: u
-  eureka-password: p
-  eureka-server: localhost
-
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: "http://${app.eureka-username}:${app.eureka-password}@${app.eureka-server}:8761/eureka/"
-    initialInstanceInfoReplicationIntervalSeconds: 5
-    registryFetchIntervalSeconds: 5
-  instance:
-    leaseRenewalIntervalInSeconds: 5
-    leaseExpirationDurationInSeconds: 5
-
 # Strongly recommend to set this property to "none" in a production environment!
 spring.jpa.hibernate.ddl-auto: update
 
@@ -53,19 +38,6 @@ spring.cloud.stream.rabbit.bindings.messageProcessor-in-0.consumer:
 spring.cloud.stream.kafka.bindings.messageProcessor-in-0.consumer:
   enableDlq: true
 
-spring.cloud.stream.kafka.binder:
-  brokers: 127.0.0.1
-  defaultBrokerPort: 9092
-
-spring.rabbitmq:
-  host: 127.0.0.1
-  port: 5672
-  username: guest
-  password: guest
-
-spring.zipkin.sender.type: rabbit
-spring.sleuth.sampler.probability: 1.0
-
 logging:
   level:
     root: INFO
@@ -73,21 +45,12 @@ logging:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
-management.endpoint.health.show-details: "ALWAYS"
-management.endpoints.web.exposure.include: "*"
-
 ---
 spring.config.activate.on-profile: docker
 
 server.port: 8080
 
 spring.datasource.url: jdbc:postgresql://postgres/reviewdb
-
-spring.rabbitmq.host: rabbitmq
-
-spring.cloud.stream.kafka.binder.brokers: kafka
-
-app.eureka-server: eureka
 
 ---
 spring.config.activate.on-profile: streaming_partitioned
@@ -105,12 +68,3 @@ spring.cloud.stream.bindings.messageProcessor-in-0.consumer.instanceIndex: 0
 spring.config.activate.on-profile: streaming_instance_1
 
 spring.cloud.stream.bindings.messageProcessor-in-0.consumer.instanceIndex: 1
-
----
-spring.config.activate.on-profile: kafka
-
-management.health.rabbit.enabled: false
-spring.cloud.stream.defaultBinder: kafka
-spring.kafka.bootstrap-servers: kafka:9092
-spring.cloud.stream.kafka.binder.replication-factor: 1
-spring.zipkin.sender.type: kafka

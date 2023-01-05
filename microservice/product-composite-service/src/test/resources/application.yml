@@ -1,6 +1,5 @@
 
 api:
-
   common:
     version:
     title:
@@ -14,6 +13,7 @@ api:
       name:
       url:
       email:
+
 
 spring.cloud.stream:
   defaultBinder: rabbit
