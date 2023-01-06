@@ -113,7 +113,7 @@ services:
       retries: 60
 
   postgres:
-    image: postgres:latest
+    image: postgres:10
     mem_limit: 512m
     environment:
       POSTGRES_USER: postgres

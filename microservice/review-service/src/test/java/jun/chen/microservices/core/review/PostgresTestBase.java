@@ -6,7 +6,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 
 public abstract class PostgresTestBase {
 
-    private static PostgreSQLContainer database = new PostgreSQLContainer<>();
+    private static PostgreSQLContainer database = new PostgreSQLContainer<>("postgres:10");
 
     static {
         database.start();

@@ -78,9 +78,9 @@ Spring-boot-microservice
 | Tool          | version | Download                                                                             |
 |---------------|---------|--------------------------------------------------------------------------------------|
 | JDK           | 16      | https://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html |
-| Postgres      | latest  | https://www.postgresql.org/                                                          |
+| Postgres      | 10      | https://www.postgresql.org/                                                          |
 | Redis         | latest  | https://redis.io/download                                                            |
-| MongoDB       | latest  | https://www.mongodb.com/download-center                                              |
+| MongoDB       | 4.4.2   | https://www.mongodb.com/download-center                                              |
 | RabbitMQ      | latest  | http://www.rabbitmq.com/download.html                                                |
 | Nginx         | latest  | http://nginx.org/en/download.html                                                    |
 | Elasticsearch | 7.11.1  | https://www.elastic.co/downloads/elasticsearch                                       |

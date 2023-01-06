@@ -149,8 +149,20 @@ it constant giving error.
 - it works in gradle but not maven.
 - it works with removed the spring.config.import: "configserver:"
 - but when it's removed it doesn't run on docker
+TODO: still doesn't run on locally
+A: fixed with multi profile setup.
 
 
+encrypt and decrypt endpoint in spring cloud config server not exist/no output.
+GatewayMetricsFilter      : spring.cloud.gateway.requests tags: [tag(httpMethod=POST),tag(httpStatusCode=401),tag(outcome=CLIENT_ERROR),tag(routeId=config-server),tag(routeUri=http://config-server:8888),tag(status=UNAUTHORIZED)]
+A: I messed up the ConfigserverApplication name in the main application.
+   instead of SpringApplication.run(ConfigserverApplication.class, args);
 
-encrypt and decrypt endpoint in spring cloud config server not exist/no output
-A:
+   I put SpringApplication.run(ConfigServerApplication.class, args);
+
+   and that is by spring cloud import org.springframework.cloud.config.server.ConfigServerApplication;
+
+   so it was running their program and not mine. I don't have control over it.
+   it was just one letter off and I used alt + enter in intelliJ and imported wrong dependency.
+
+   It should work when encrypt.key is introduced in application.yml file
