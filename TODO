@@ -1,8 +1,14 @@
 TODO: add gRPC and test and performance/speed difference between REST API.
 
-TODO: add spring cloud config to the core services.
-
-
-
 TODO: add local/different envoriment/profile in docker
 TODO: add a profile to run config server locally, it requires token to get local config
+
+
+
+
+
+
+
+TODO: split the long commands in README.MD for better readability
+
+

@@ -34,7 +34,7 @@ might have issues with persistence testing scope in pom.xml
 
 
 the unit test the book provide doesn't really work with intelliJ
-- mapstruct error version 1.31 and intelliJ conflict
+- mapstruct error version 1.3.1 and intelliJ conflict
 - mapstruct setup processorPath error
 - java version 1.8 or above
 - gradle and maven difference
@@ -52,8 +52,7 @@ getting "Could not find class [org.springframework.boot.actuate.autoconfigure.en
 A: missing actuator dependency. need it for health check
 
 
-
-circular loop with ProductIntegration autoweire with health check bean
+circular loop with ProductIntegration auto-wired with health check bean
 A: moved the health check bean into productIntegration class instead in application class
 
 
@@ -166,3 +165,23 @@ A: I messed up the ConfigserverApplication name in the main application.
    it was just one letter off and I used alt + enter in intelliJ and imported wrong dependency.
 
    It should work when encrypt.key is introduced in application.yml file
+
+
+
+
+Spring boot and Spring cloud release train incompatible
+A: Spring cloud only support specific version of Spring boot.
+   and add
+            <dependency>
+   				<groupId>org.springframework.cloud</groupId>
+   				<artifactId>spring-cloud-dependencies</artifactId>
+   				<version>${spring.cloud-version}</version>
+   				<type>pom</type>
+   				<scope>import</scope>
+   			</dependency>
+    for easier change of java version and spring boot version.
+    it will change all the children's dependency version.
+
+check for supported version https://spring.io/projects/spring-cloud#overview
+
+

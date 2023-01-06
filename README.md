@@ -481,29 +481,121 @@ To get configuration file of each services
 /{application}-{profile}.properties
 /{label}/{application}-{profile}.properties
 
-
 curl https://dev-usr:dev-pwd@localhost:8443/config/gateway/docker -ks | jq
 curl https://dev-usr:dev-pwd@localhost:8443/config/eureka-server/docker -ks | jq
 curl https://dev-usr:dev-pwd@localhost:8443/config/auth-server/docker -ks | jq
-
-
-
 curl https://dev-usr:dev-pwd@localhost:8443/config/product-composite/docker -ks | jq
 curl https://dev-usr:dev-pwd@localhost:8443/config/product/docker -ks | jq
 curl https://dev-usr:dev-pwd@localhost:8443/config/recommendation/docker -ks | jq
 curl https://dev-usr:dev-pwd@localhost:8443/config/review/docker -ks | jq
 
-
+the common file of shared by all configuration files
 curl https://dev-usr:dev-pwd@localhost:8443/config/application/default -ks | jq
-
-
-
 
 get health point of urls in config
 curl -k https://dev-usr:dev-pwd@localhost:8443/config/actuator | jq
 
 
+Encrypt and decrypt endpoint provided by Spring cloud config
+Use it to encrypt in your config file. need to use '{cipher}UR_ENCRYPTED_CODE'
+Book used symmetric key to encrypt/decrypt, it's easier to do. Just add ENCRYPT.KEY in config server application.yml to enables it.
+It is injected in by docker-compose file. ENCRYPT_KEY=${CONFIG_SERVER_ENCRYPT_KEY} and uses .env to find the encrypt key.
+I did not encrypt any password just for easier reading.
 
+$ curl -k https://dev-usr:dev-pwd@localhost:8443/config/encrypt --data-urlencode "hello world"
+
+$ curl -k https://dev-usr:dev-pwd@localhost:8443/config/decrypt -d "THE_LONG_ENCRYPTED_CODE"
+
+
+
+
+Circuit breaker,Resilience4j 
+- support either java 8 or 17 for 1.7 or 2.0 version
+- have actuator to check health of the circuit. Closed = working, half-open = working but monitored, and open = not working
+
+$ docker-compose exec -T product-composite curl -s http://product-composite:8080/actuator/health  // All health of all circuits 
+
+$ docker-compose exec -T product-composite curl -s http://product-composite:8080/actuator/health | jq -r .components.circuitBreakers.details.product.details.state
+
+Verifying that the circuit is closed under normal operations
+$ unset ACCESS_TOKEN
+$ ACCESS_TOKEN=$(curl -k https://writer:secret@localhost:8443/oauth2/token -d grant_type=client_credentials -s | jq -r .access_token)
+$ echo $ACCESS_TOKEN
+$ curl -H "Authorization: Bearer $ACCESS_TOKEN" -k https://localhost:8443/product-composite/1 -w "%{http_code}\n" -o /dev/null -s
+
+
+forcing a circuit breaker to open when things go wrong, it was set/configured to open when delay is 3.
+$ curl -H "Authorization: Bearer $ACCESS_TOKEN" -k https://localhost:8443/product-composite/1?delay=3 -s | jq .
+
+
+When the circuit break opens/error, it would try to fix itself and it would be half-open state after 10 seconds.
+$ docker-compose exec product-composite curl -s http://product-composite:8080/actuator/health | jq -r .components.circuitBreakers.details.product.details.state
+
+Closing the circuit again. Sending a normal request.
+curl -H "Authorization: Bearer $ACCESS_TOKEN" -k https://localhost:8443/product-composite/1 -w "%{http_code}\n" -o /dev/null -s
+
+See the transitions that the circuit just experienced.
+$ docker-compose exec product-composite curl -s http://product-composite:8080/actuator/circuitbreakerevents/product/STATE_TRANSITION | jq -r '.circuitBreakerEvents[-3].stateTransition, .circuitBreakerEvents[-2].stateTransition, .circuitBreakerEvents[-1].stateTransition'
+
+
+
+Retries caused bt random errors
+fault percent is set to 25. 25% means 1 in 4 request will fail and retry mechanism will kick in and retry the request.
+
+run the command multiple times and when response time over 1 second, meaning the retry mechanism is retrying after 1 second.
+$ time curl -H "Authorization: Bearer $ACCESS_TOKEN" -k https://localhost:8443/product-composite/1?faultPercent=25 -w "%{http_code}\n" -o /dev/null -s
+
+shows the retry events happened from running multiple previous commands.
+$ docker-compose exec product-composite curl -s http://product-composite:8080/actuator/retryevents | jq '.retryEvents[-2], .retryEvents[-1]'
+
+
+
+
+Distributed tracing
+
+Sending success request
+$ unset ACCESS_TOKEN
+$ ACCESS_TOKEN=$(curl -k https://writer:secret@localhost:8443/oauth2/token -d grant_type=client_credentials -s | jq -r .access_token)
+$ echo $ACCESS_TOKEN 
+$ curl -H "Authorization: Bearer $ACCESS_TOKEN" -k https://localhost:8443/product-composite/1 -w "%{http_code}\n" -o /dev/null -s
+
+go to Zipkin UI http://localhost:9411/zipkin/
+
+search gateway and run query
+and there's all the response times of all services
+
+Sending unsuccessful request
+curl -H "Authorization: Bearer $ACCESS_TOKEN" -k https://localhost:8443/product-composite/12345 -w "%{http_code}\n" -o /dev/null -s
+go to Zipkin UI http://localhost:9411/zipkin/
+
+search gateway and run query
+and there's all the response times of all services
+
+
+
+Sending an API request that triggers asynchronous processing(using message brokers). The delete operation is idempotent, that is it will succeed even if the product don't exist.
+$ curl -X DELETE -H "Authorization: Bearer $ACCESS_TOKEN" -k https://localhost:8443/product-composite/12345 -w "%{http_code}\n" -o /dev/null -s
+
+Monitoring trace information passed to Zipkin in RabbitMQ
+rabbit mq web UI http://localhost:15672
+in queue and zipkin then in overview.
+
+
+
+using Kafka as the message broker 
+
+$ export COMPOSE_FILE=docker-compose-kafka.yml
+$ ./test-em-all.bash start
+
+show available topics in Kafka
+$ docker-compose exec kafka /opt/kafka/bin/kafka-topics.sh --zookeeper zookeeper --list
+
+show the trace events that were sent to the Zipkin topic
+$ docker-compose exec kafka /opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic zipkin --from-beginning --timeout-ms 1000
+
+shut down and clean up.
+$ docker-compose down
+$ unset COMPOSE_FILE
 
 ### material:
 - Shell scripting
