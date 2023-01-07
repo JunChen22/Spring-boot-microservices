@@ -54,6 +54,3 @@ spring.kafka.bootstrap-servers: kafka:9092
 spring.cloud.stream.kafka.binder.replication-factor: 1
 spring.zipkin.sender.type: kafka
 
-
-
-
