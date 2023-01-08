@@ -139,13 +139,6 @@ services:
       timeout: 5s
       retries: 10
 
-  eureka:
-    build: spring-cloud/eureka-server
-    mem_limit: 512m
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
-      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
 
   gateway:
     build: spring-cloud/gateway

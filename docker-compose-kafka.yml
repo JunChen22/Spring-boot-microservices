@@ -141,16 +141,6 @@ services:
     environment:
       - KAFKA_ADVERTISED_HOST_NAME=zookeeper
 
-  eureka:
-    build: spring-cloud/eureka-server
-    mem_limit: 512m
-    ports:
-      - "8761:8761"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker,kafka
-      - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
-      - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
-
 
   gateway:
     build: spring-cloud/gateway

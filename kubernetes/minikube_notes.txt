@@ -1,0 +1,126 @@
+
+minikube ran on docker
+
+
+kubectl is the kubernetes command line tool.
+installed kubectl 1.26.0
+
+
+$ minikube profile my-profile // to use a specific profile
+
+
+
+$ minikube config get profile // to get current config file
+
+
+
+
+
+
+common used commands for retriving information about a kubernetes cluster
+$ kubectl get     // shows information about the specified API object
+$ kubectl describe // gives more detail about the specified API object
+$ kubectl logs  // display log output from the containers
+
+
+
+
+
+
+
+The book runs minikube on virtual box
+My minikube is running inside docker
+
+
+minikube start --memory=10240 --cpus=4 --disk-size=30g
+
+
+
+
+
+
+
+
+
+
+
+$ kubectl apply -f ./kubernetes/first-attempts/nginx-deployment.yaml
+
+$ kubectl get all
+
+
+delete
+$ kubectl delete pod --selector app=nginx-app
+
+
+$ kubectl apply -f ./kubernetes/first-attempts/nginx-service.yaml
+
+
+
+
+$ minikube ip // shows the IP address of the single node
+
+with the ip address given and the node port 30800
+
+go to browser
+
+http://x.x.x.x:30080/  // x.x.x.x is whatever $ minikube ip   outputs
+http://192.168.99.116:30080
+
+
+
+=================================== chapter 16 ========================================
+
+
+
+install siege
+
+
+
+Kustomize
+- use to configure deployments for different run time environments
+
+
+using kubernetes deployments object for rolling upgrades.
+
+
+
+replace service discovery since kubernetes comes with built-in support for service discovery.
+
+- Netflix Eureka replace with Kubernetes service objects and kube-proxy for service discovery
+- Using Kustomize to prepare the microservices to be deployed in different environments
+- testing thes deployments witha versiono fthe test script
+- performing rolling upgrades
+- learning how to roll back a failed upgrade
+
+
+advantage of using kubernetes discovery service
+- doesn't require a client library such as Netflix Ribbon, which we have been using together with Netflix Eureka
+
+drawback
+- only works in Kubernetes environment
+
+
+Kube-proxy(discovery service)
+- accepts request to the DNS  name or IP address of a service object, it should be fairly simple to replace it with similar
+  discovery service.
+- for example, one that comes bundled with another container orchestrator
+
+
+
+
+
+
+
+
+
+Helm
+- open source based package manager for kubernetes
+
+
+
+common directory is boilerplate definition for the component chart.
+
+
+
+

@@ -92,7 +92,7 @@ spring.cloud.stream:
       producer:
         required-groups: auditGroup
 
-spring.security.oauth2.resourceserver.jwt.issuer-uri: http://${app.auth-server}:9999
+spring.security.oauth2.resourceserver.jwt.issuer-uri: http://${app.auth-server}
 # if you want to change from local authorization server to Auth0 : https://${TENANT}/
 # spring.security.oauth2.resourceserver.jwt.issuer-uri: https://dev-junc.us.auth0.com/
 
@@ -137,7 +137,7 @@ logging:
 
 spring.config.activate.on-profile: docker
 
-server.port: 8080
+server.port: 80
 
 ---
 spring.config.activate.on-profile: streaming_partitioned
@@ -153,3 +153,12 @@ spring.cloud.stream.bindings.recommendations-out-0.producer:
 spring.cloud.stream.bindings.reviews-out-0.producer:
   partition-key-expression: headers['partitionKey']
   partition-count: 2
+
+---
+spring.config.activate.on-profile: prod
+
+logging:
+  level:
+    root: WARN
+    jun.chen: WARN
+    org.springframework.web.server.adapter.HttpWebHandlerAdapter: WARN

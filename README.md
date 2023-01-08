@@ -29,7 +29,7 @@ $ unset COMPOSE_FILE
 rabbitmq
 localhost:15672   // username and password : guest
 
-https://localhost:8443/eureka/web  // username: u password: p
+https://localhost:8443/eureka/web  // username: u password: p     // being replace in kubernetes build in service discovery
 
 ```
 Spring-boot-microservice 
@@ -472,7 +472,8 @@ it generates edge.p12 file in gateway.../resource/keystore/
 
 
 
-
+Spring cloud config
+- uses File System Backend(local machine) to store configuration file. 
 To get configuration file of each services
 
 /{application}/{profile}[/{label}]
