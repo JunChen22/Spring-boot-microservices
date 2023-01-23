@@ -17,7 +17,7 @@ $ minikube config get profile // to get current config file
 
 
 
-common used commands for retriving information about a kubernetes cluster
+common used commands for retrieving information about a kubernetes cluster
 $ kubectl get     // shows information about the specified API object
 $ kubectl describe // gives more detail about the specified API object
 $ kubectl logs  // display log output from the containers
