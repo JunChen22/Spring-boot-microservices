@@ -1,11 +1,14 @@
 
 minikube ran on docker
-
+version is 1.26.1
 
 kubectl is the kubernetes command line tool.
 installed kubectl 1.26.0
 
 
+
+
+$ minikube start -p my-profile  // different profile
 $ minikube profile my-profile // to use a specific profile
 
 
@@ -21,6 +24,35 @@ common used commands for retrieving information about a kubernetes cluster
 $ kubectl get     // shows information about the specified API object
 $ kubectl describe // gives more detail about the specified API object
 $ kubectl logs  // display log output from the containers
+
+
+
+$ kubectl config get-contexts // show context
+$ kubectl config use-context my-clust // to switch context
+$ kubectl config set-context $(kubectl config current-context) --namespace my-namespace
+
+
+
+to create kubernetes cluster
+$ unset KUBECONFIG
+$ minikube profile handson-spring-boot-cloud
+$ minikube start --memory=10240 --cpus=4 --disk-size=30g --kubernetes-version=v1.26.1 --vm-driver=docker
+
+
+
+minikube profile list
+
+minikube addons list
+$ minikube addons list // show the list of addons that can be added
+$ minikube addons enable ingress
+$ minikube addons enable metrics-server
+
+
+
+
+
+
+
 
 
 
