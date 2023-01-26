@@ -1,51 +1,112 @@
-replicaCount: 1
+secrets:
 
-image:
-  repository: hands-on
-  tag: latest
-  pullPolicy: Never
-  args: []
+  config-server-secrets:
+    ENCRYPT_KEY: my-very-secure-encrypt-key
+    SPRING_SECURITY_USER_NAME: prod-usr
+    SPRING_SECURITY_USER_PASSWORD: prod-pwd
 
-ports:
-  - name: http
-    containerPort: 80
-    protocol: TCP
+  config-client-credentials:
+    CONFIG_SERVER_USR: prod-usr
+    CONFIG_SERVER_PWD: prod-pwd
 
-livenessProbe_enabled: false
-livenessProbe:
-  httpGet:
-    scheme: HTTP
-    path: /actuator/health/liveness
-    port: 80
-  initialDelaySeconds: 10
-  periodSeconds: 10
-  timeoutSeconds: 2
-  failureThreshold: 20
-  successThreshold: 1
+config-server:
+  image:
+    tag: v1
+  env:
+    LOGGING_LEVEL_ROOT: WARN
+    MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info"
+  envFromSecretRefs:
+    - config-server-secrets
+  resources:
+    requests:
+      memory: 200Mi
+    limits:
+      memory: 400Mi
 
-readinessProbe_enabled: false
-readinessProbe:
-  httpGet:
-    scheme: HTTP
-    path: /actuator/health/readiness
-    port: 80
-  initialDelaySeconds: 10
-  periodSeconds: 10
-  timeoutSeconds: 2
-  failureThreshold: 3
-  successThreshold: 1
+gateway:
+  image:
+    tag: v1
+  env:
+    SPRING_PROFILES_ACTIVE: "docker,prod"
+  envFromSecretRefs:
+    - config-client-credentials
+  resources:
+    requests:
+      memory: 200Mi
+    limits:
+      memory: 400Mi
 
-configmap:
-  enabled: false
+auth-server:
+  image:
+    tag: v1
+  env:
+    SPRING_PROFILES_ACTIVE: "docker,prod"
+  envFromSecretRefs:
+    - config-client-credentials
+  resources:
+    requests:
+      memory: 200Mi
+    limits:
+      memory: 400Mi
 
-resources:
-  limits:
-    memory: 350Mi
+product:
+  image:
+    tag: v1
+  env:
+    SPRING_PROFILES_ACTIVE: "docker,prod"
+  envFromSecretRefs:
+    - config-client-credentials
+  resources:
+    requests:
+      memory: 200Mi
+    limits:
+      memory: 400Mi
 
-service:
-  type: ClusterIP
-  ports:
-  - port: 80
-    targetPort: http
-    protocol: TCP
-    name: http
+recommendation:
+  image:
+    tag: v1
+  env:
+    SPRING_PROFILES_ACTIVE: "docker,prod"
+  envFromSecretRefs:
+    - config-client-credentials
+  resources:
+    requests:
+      memory: 200Mi
+    limits:
+      memory: 400Mi
+
+review:
+  image:
+    tag: v1
+  env:
+    SPRING_PROFILES_ACTIVE: "docker,prod"
+  envFromSecretRefs:
+    - config-client-credentials
+  resources:
+    requests:
+      memory: 200Mi
+    limits:
+      memory: 400Mi
+
+product-composite:
+  image:
+    tag: v1
+  env:
+    SPRING_PROFILES_ACTIVE: "docker,prod"
+  envFromSecretRefs:
+    - config-client-credentials
+  resources:
+    requests:
+      memory: 200Mi
+    limits:
+      memory: 400Mi
+
+zipkin-server:
+  env:
+    LOGGING_LEVEL_ROOT: WARN
+    RABBIT_ADDRESSES: 172.17.0.1
+  resources:
+    requests:
+      memory: 300Mi
+    limits:
+      memory: 600Mi

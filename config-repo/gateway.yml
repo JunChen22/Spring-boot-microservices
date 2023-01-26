@@ -24,17 +24,17 @@ spring.cloud.gateway.routes:
       - Path=/webjars/**
 
   - id: oauth2-server
-    uri: http://auth-server
+    uri: http://${app.auth-server}
     predicates:
       - Path=/oauth2/**
 
   - id: oauth2-login
-    uri: http://auth-server
+    uri: http://${app.auth-server}
     predicates:
       - Path=/login/**
 
   - id: oauth2-error
-    uri: http://auth-server
+    uri: http://${app.auth-server}
     predicates:
       - Path=/error/**
 
@@ -47,7 +47,7 @@ spring.cloud.gateway.routes:
 
 spring.security.oauth2.resourceserver.jwt.issuer-uri: http://${app.auth-server}
 # if you want to change from local authorization server to Auth0 : https://${TENANT}/
-#spring.security.oauth2.resourceserver.jwt.issuer-uri: https://dev-junc.us.auth0.com/
+# spring.security.oauth2.resourceserver.jwt.issuer-uri: https://dev-junc.us.auth0.com/
 
 spring.sleuth.reactor.instrumentation-type: decorate-on-last
 

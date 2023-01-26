@@ -1,8 +1,6 @@
 server.port: 7003
 server.error.include-message: always
 
-spring.application.name: review
-
 # Strongly recommend to set this property to "none" in a production environment!
 spring.jpa.hibernate.ddl-auto: update
 
@@ -19,7 +17,6 @@ spring.datasource.hikari.initializationFailTimeout: 60000
 spring.cloud.function.definition: messageProcessor
 
 spring.cloud.stream:
-  defaultBinder: rabbit
   default.contentType: application/json
   bindings.messageProcessor-in-0:
     destination: reviews
@@ -73,7 +70,7 @@ spring.cloud.stream.bindings.messageProcessor-in-0.consumer.instanceIndex: 1
 
 spring.config.activate.on-profile: prod
 
-spring.datasource.url: jdbc:postgresql://172.17.0.1:3306/reviewdb
+spring.datasource.url: jdbc:postgresql://172.17.0.1:3306/reviewdb # TODO:change IP address
 
 logging:
   level:

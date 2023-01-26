@@ -71,12 +71,9 @@ api:
 server.port: 7000
 server.error.include-message: always
 
-spring.application.name: product-composite
-
 server.forward-headers-strategy: framework
 
 spring.cloud.stream:
-  defaultBinder: rabbit
   default.contentType: application/json
   bindings:
     products-out-0:

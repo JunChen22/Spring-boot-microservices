@@ -1,51 +1,46 @@
-replicaCount: 1
+fullnameOverride: zipkin-server
 
 image:
-  repository: hands-on
-  tag: latest
-  pullPolicy: Never
-  args: []
+  repository: registry.hub.docker.com/openzipkin
+  name: zipkin
+  tag: 2.23.2
+  pullPolicy: IfNotPresent
+
+env:
+  STORAGE_TYPE: mem
+  RABBIT_ADDRESSES: rabbitmq
 
 ports:
-  - name: http
-    containerPort: 80
-    protocol: TCP
+  - containerPort: 9411
 
-livenessProbe_enabled: false
+livenessProbe_enabled: true
 livenessProbe:
   httpGet:
     scheme: HTTP
-    path: /actuator/health/liveness
-    port: 80
+    path: /actuator/info
+    port: 9411
   initialDelaySeconds: 10
   periodSeconds: 10
   timeoutSeconds: 2
   failureThreshold: 20
   successThreshold: 1
 
-readinessProbe_enabled: false
+readinessProbe_enabled: true
 readinessProbe:
   httpGet:
     scheme: HTTP
-    path: /actuator/health/readiness
-    port: 80
+    path: /actuator/health
+    port: 9411
   initialDelaySeconds: 10
   periodSeconds: 10
   timeoutSeconds: 2
   failureThreshold: 3
   successThreshold: 1
 
-configmap:
-  enabled: false
-
 resources:
   limits:
-    memory: 350Mi
+    memory: 512Mi
 
 service:
-  type: ClusterIP
   ports:
-  - port: 80
-    targetPort: http
-    protocol: TCP
-    name: http
+    - port: 9411

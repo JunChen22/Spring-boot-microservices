@@ -1,51 +1,44 @@
-replicaCount: 1
+secrets:
 
-image:
-  repository: hands-on
-  tag: latest
-  pullPolicy: Never
-  args: []
+  config-server-secrets:
+    ENCRYPT_KEY: my-very-secure-encrypt-key
+    SPRING_SECURITY_USER_NAME: dev-usr
+    SPRING_SECURITY_USER_PASSWORD: dev-pwd
 
-ports:
-  - name: http
-    containerPort: 80
-    protocol: TCP
+  config-client-credentials:
+    CONFIG_SERVER_USR: dev-usr
+    CONFIG_SERVER_PWD: dev-pwd
 
-livenessProbe_enabled: false
-livenessProbe:
-  httpGet:
-    scheme: HTTP
-    path: /actuator/health/liveness
-    port: 80
-  initialDelaySeconds: 10
-  periodSeconds: 10
-  timeoutSeconds: 2
-  failureThreshold: 20
-  successThreshold: 1
+postgres:
+  env:
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: password
+    POSTGRES_DB: reviewdb
 
-readinessProbe_enabled: false
-readinessProbe:
-  httpGet:
-    scheme: HTTP
-    path: /actuator/health/readiness
-    port: 80
-  initialDelaySeconds: 10
-  periodSeconds: 10
-  timeoutSeconds: 2
-  failureThreshold: 3
-  successThreshold: 1
+config-server:
+  envFromSecretRefs:
+    - config-server-secrets
 
-configmap:
-  enabled: false
+gateway:
+  envFromSecretRefs:
+    - config-client-credentials
 
-resources:
-  limits:
-    memory: 350Mi
+auth-server:
+  envFromSecretRefs:
+    - config-client-credentials
 
-service:
-  type: ClusterIP
-  ports:
-  - port: 80
-    targetPort: http
-    protocol: TCP
-    name: http
+product:
+  envFromSecretRefs:
+    - config-client-credentials
+
+recommendation:
+  envFromSecretRefs:
+    - config-client-credentials
+
+review:
+  envFromSecretRefs:
+    - config-client-credentials
+
+product-composite:
+  envFromSecretRefs:
+    - config-client-credentials

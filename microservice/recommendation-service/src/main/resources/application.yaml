@@ -8,15 +8,10 @@ spring:
       maxInterval: 10000
       maxAttempts: 20
     uri: http://localhost:8888
-    username: dev-usr
-    password: dev-pwd
+    username: ${CONFIG_SERVER_USR}
+    password: ${CONFIG_SERVER_PWD}
 
 ---
 spring.config.activate.on-profile: docker
 spring.config.import: "configserver:"
 spring.cloud.config.uri: http://config-server:8888
-
-spring:
-  cloud.config:
-    username: ${CONFIG_SERVER_USR}
-    password: ${CONFIG_SERVER_PWD}

@@ -185,3 +185,21 @@ A: Spring cloud only support specific version of Spring boot.
 check for supported version https://spring.io/projects/spring-cloud#overview
 
 
+
+oauth2 server dependency version will cause error if version not right.
+        <dependency>
+			<groupId>org.springframework.security.experimental</groupId>
+			<artifactId>spring-security-oauth2-authorization-server</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+version 2 and 3 is very different than the experimental version.
+
+
+
+
+
+============================= kubernetes
+
+http://auth-server:9999 changes to just http://auth-server without port number when deploying in kubernetes. (centralized config easy to change port)
+
+

@@ -1,51 +1,28 @@
-replicaCount: 1
+fullnameOverride: gateway
 
 image:
-  repository: hands-on
-  tag: latest
-  pullPolicy: Never
-  args: []
+  name: gateway
 
 ports:
-  - name: http
-    containerPort: 80
-    protocol: TCP
+  - containerPort: 8443
 
-livenessProbe_enabled: false
+env:
+  SPRING_PROFILES_ACTIVE: "docker"
+
+livenessProbe_enabled: true
 livenessProbe:
   httpGet:
-    scheme: HTTP
-    path: /actuator/health/liveness
-    port: 80
-  initialDelaySeconds: 10
-  periodSeconds: 10
-  timeoutSeconds: 2
-  failureThreshold: 20
-  successThreshold: 1
-
-readinessProbe_enabled: false
+    scheme: HTTPS
+    port: 8443
+readinessProbe_enabled: true
 readinessProbe:
   httpGet:
-    scheme: HTTP
-    path: /actuator/health/readiness
-    port: 80
-  initialDelaySeconds: 10
-  periodSeconds: 10
-  timeoutSeconds: 2
-  failureThreshold: 3
-  successThreshold: 1
-
-configmap:
-  enabled: false
-
-resources:
-  limits:
-    memory: 350Mi
+    scheme: HTTPS
+    port: 8443
 
 service:
-  type: ClusterIP
+  type: NodePort
   ports:
-  - port: 80
-    targetPort: http
-    protocol: TCP
-    name: http
+    - port: 443
+      targetPort: 8443
+      nodePort: 30443

@@ -3,6 +3,7 @@ version: '2.1'
 services:
   product-p0:
     build: microservice/product-service
+    image: hands-on/product-service
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,streaming_instance_0
@@ -17,6 +18,7 @@ services:
 
   product-p1:
     build: microservice/product-service
+    image: hands-on/product-service
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,streaming_instance_1
@@ -31,6 +33,7 @@ services:
 
   recommendation-p0:
     build: microservice/recommendation-service
+    image: hands-on/recommendation-service
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,streaming_instance_0
@@ -45,6 +48,7 @@ services:
 
   recommendation-p1:
     build: microservice/recommendation-service
+    image: hands-on/recommendation-service
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,streaming_instance_1
@@ -59,6 +63,7 @@ services:
 
   review-0:
     build: microservice/review-service
+    image: hands-on/review-service
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,streaming_instance_0
@@ -73,6 +78,7 @@ services:
 
   review-p1:
     build: microservice/review-service
+    image: hands-on/review-service
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned,streaming_instance_1
@@ -87,9 +93,8 @@ services:
 
   product-composite:
     build: microservice/product-composite-service
+    image: hands-on/product-composite-service
     mem_limit: 512m
-    ports:
-      - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker,streaming_partitioned
       - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
@@ -129,7 +134,7 @@ services:
 
   rabbitmq:
     image: rabbitmq:3.8.11-management
-    mem_limit: 350m
+    mem_limit: 512m
     ports:
       - 5672:5672
       - 15672:15672
@@ -142,6 +147,7 @@ services:
 
   gateway:
     build: spring-cloud/gateway
+    image: hands-on/gateway
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SERVER_SSL_KEY_STORE=file:/keystore/edge.p12
@@ -159,14 +165,15 @@ services:
 
 
   auth-server:
+    build: spring-cloud/authorization-server
+    image: hands-on/auth-server
+    mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - CONFIG_SERVER_USR=${CONFIG_SERVER_USR}
       - CONFIG_SERVER_PWD=${CONFIG_SERVER_PWD}
-    build: spring-cloud/authorization-server
-    mem_limit: 512m
     healthcheck:
-      test: ["CMD", "curl", "-fs", "http://localhost:9999/actuator/health"]
+      test: ["CMD", "curl", "-fs", "http://localhost/actuator/health"]
       interval: 5s
       timeout: 2s
       retries: 60
@@ -174,6 +181,7 @@ services:
 
   config-server:
     build: spring-cloud/config-server
+    image: hands-on/config-server
     mem_limit: 512m
     environment:
       - SPRING_PROFILES_ACTIVE=docker,native
