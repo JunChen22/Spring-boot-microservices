@@ -37,12 +37,29 @@ Spring-boot-microservice
 │     ├── product-service 
 │     ├── recommendation-service
 │     └── review-service
-├──spring-cloud               -- spring cloud servers/functionalities
-│     ├── OAuth / Authorization server 
-│     ├── Eureka / Discovery server
+├── spring-cloud               -- spring cloud servers/functionalities
+│     ├── Authorization server -- can run OAuth2 or local 
+│     ├── Config server / centralized configuration server
 │     └── Gateway / Edge server
+├── kubernetes
+│     ├── Helm
+│     │     ├── common -- shared by all component
+│     │     ├── components -- kubernete/helm configuration for each component
+│     │     └── environments
+│     │           ├── dev-env
+│     │           └── prod-env
+│     ├── EFK  -- Elasticsearch,Fluentd, Kibana stack
+│     ├── grafana
+│     └── 
 ├── util - helper classes hanlding HTTP info and exception
-└── api - API definitions
+├── api - API definitions
+├── config-repo   -- centralized config files location
+├── keystore   -- used by gateway as
+├── auth0 -- used when changing authorization from local to Oauth2
+└── .env   -- environment variable
+
+* Spring cloud Eureka / discovery service is replaced with Kubernetes Ingress for discovery service.
+* resilience4J and distributed tracing is part of the services(only product-compositer service for resilience4J).
 ```
 
 ### Tech stack
@@ -55,8 +72,7 @@ Spring-boot-microservice
 | Kubernetes              | container orchestration | https://kubernetes.io/                  |
 | Istio                   | Service mesh            | https://istio.io/                       |
 | Maven                   | Build tool              | https://maven.apache.org/               |
-
-
+Siege - a command line-based load test tool.
 
 #### Diagram
 ##### System architecture
@@ -461,17 +477,6 @@ it generates edge.p12 file in gateway.../resource/keystore/
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 Spring cloud config
 - uses File System Backend(local machine) to store configuration file. 
 To get configuration file of each services
@@ -605,5 +610,5 @@ $ unset COMPOSE_FILE
 - book author,https://www.packtpub.com/product/microservices-with-spring-boot-and-spring-cloud-second-edition/9781801072977
 - docker
 - https://www.baeldung.com/spring-security-oauth-auth-server
-
+- https://microservices.io/
 

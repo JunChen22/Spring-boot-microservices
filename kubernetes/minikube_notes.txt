@@ -121,7 +121,7 @@ replace service discovery since kubernetes comes with built-in support for servi
 
 - Netflix Eureka replace with Kubernetes service objects and kube-proxy for service discovery
 - Using Kustomize to prepare the microservices to be deployed in different environments
-- testing thes deployments witha versiono fthe test script
+- testing these deployments with new version of the test script
 - performing rolling upgrades
 - learning how to roll back a failed upgrade
 
@@ -152,6 +152,207 @@ Helm
 
 
 common directory is boilerplate definition for the component chart.
+
+
+
+
+================= Helm ========================
+with helm deploy
+
+
+
+minikube start or delete to start or end "reset"
+
+minikube addons list
+minikube addons enable ingress
+minikube addons enable metrics-server
+
+
+$ eval $(minikube docker-env)  // could check it with $ minikube status
+
+$ for f in kubernetes/helm/components/*; do helm dep up $f; done
+
+$ for f in kubernetes/helm/environments/*; do helm dep up $f; done
+
+$ helm dep ls kubernetes/helm/environments/dev-env
+
+
+// avoid slow deployment
+$ docker pull postgres:10
+$ docker pull mongo:4.4.2
+$ docker pull rabbitmq:3.8.11-management
+$ docker pull openzipkin/zipkin:2.23.2
+
+
+$ helm template kubernetes/helm/environments/dev-env
+
+
+// to verify that the kubernetes cluster will actually accept the rendered manifest, a
+// dry run of the installation.
+helm install --dry-run --debug hands-on-dev-env kubernetes/helm/environments/dev-env
+
+
+
+
+
+
+// initial the deployment of the complete system landscape including creating the name space.
+$ helm install hands-on-dev-env kubernetes/helm/environments/dev-env/ -n hands-on --create-namespace
+
+
+
+// set the newly created namespace as the default namespace for kubectl
+// start
+$ kubectl config set-context $(kubectl config current-context) --namespace=hands-on
+
+
+
+// to see the pods starting up
+$ kubectl get pods --watch
+
+// some pods will have error because they are depend on external resource that they require to be
+// accessible during the startup. If not, they will crash.
+// E.g.  The gateway and product composite service depend on the auth server.
+   		 Zipkin server depends on access to RabbitMQ.
+
+
+
+
+// to show the docker images used
+$ kubectl get pods -o json | jq .items[].spec.containers[].image
+
+
+
+
+
+
+
+
+
+
+
+// to test the deployment
+
+$ minikube ip // shows the ip address of minikube
+$ MINIKUBE_HOST=$(minikube ip)
+$ HOST=$MINIKUBE_HOST PORT=30443 USE_K8S=true ./setup-test.bash   // port 30443 is the gateway port
+
+
+// upgrade Helm
+$ helm upgrade hands-on-dev-env -n hands-on kubernetes/helm/environments/dev-env --wait  // after changes is made
+
+
+
+
+docker ps slow or non-responsive after minikube stop or delete
+A: work around is switch tab/terminal
+
+
+// i just delete replicate set to restart pods
+
+
+
+// i changed the auth {auth.server} in gateway
+// and there's a permit all in actuator for config server security
+
+
+
+
+
+
+// testing Spring boot's graceful shutdown and probes for liveness and readiness
+
+
+
+====== minor test to see if changes in dev-env have an effect
+change in dev-env in kubernetes/helm/environments/dev-env/values.yaml
+change from configured 2 seconds to 20 seconds.
+
+product-composite:
+  envFromSecretRefs:
+    - config-client-credentials
+  env:
+    RESILIENCE4J_TIMELIMITER_INSTANCES_PRODUCT_TIMEOUTDURATION: 20s
+
+
+
+$ helm upgrade hands-on-dev-env -n hands-on kubernetes/helm/environments/dev-env --wait // apply the changes, --wait flag will ensure update in completed when command terminates.
+
+// test will fail with $ HOST=$MINIKUBE_HOST PORT=30443 USE_K8S=true ./setup-test.bash
+
+
+
+
+========= testing graceful shutdown mechanism ======
+useful to avoid normal client request being affected by the pod being stopped for example as a result of scaling down or a rolling upgrade being performed.
+
+
+$ ACCESS_TOKEN=$(curl -d grant_type=client_credentials -ks https://writer:secret@$MINIKUBE_HOST:30443/oauth2/token | jq .access_token -r)
+// echo $ACCESS_TOKEN
+
+$ time curl -kH "Authorization: Bearer $ACCESS_TOKEN" https://$MINIKUBE_HOST:30443/product-composite/1?delay=5     // delay
+
+siege -c5 -d2 -v -H "Authorization: Bearer $ACCESS_TOKEN" https://$MINIKUBE_HOST:30443/product-composite/1?delay=5  // constant request send by siege
+																													// -c5 5 concurrent users sending request
+																													// -d2 random delay between 0 and 2 seconds to spread the request
+
+kubectl logs -f --tail=0 -l app.kubernetes.io/name=product   // gets the end part of the logs for product service // while siege is running in another tab
+
+kubectl rollout restart deploy/product    // restart a pod, starts a new pod before terminating the old one for uninterrupted request.
+										  // if the graceful shutdown work as expected, non of the active requests should fail.
+
+
+
+======== second graceful shutdown test =======
+
+siege -c5 -d5 -v -H "Authorization: Bearer $ACCESS_TOKEN" https://$MINIKUBE_HOST:30443/product-composite/1?delay=15 // request takes 15 seconds
+																													// -c5 5 concurrent user/request
+																													// -d5 between 5 seconds interval
+
+
+kubectl logs -f --tail=0 -l app.kubernetes.io/name=product
+
+kubectl rollout restart deploy/product  // not all request are allowed to terminate gracefully before the application was stopped.
+										// The log message "Graceful shutdown aborted with one or more requests still active". Indicates that
+										// at least one request was not allowed to complete before the application was stopped.
+
+
+
+
+
+// clean up after the test
+$ helm rollback hands-on-dev-env -n hands-on --wait   // rolling back is useful for rolling back a failed upgrade
+
+remove the increased timeout setting in kubernetes/helm/environments/dev-env/values.yaml
+
+$ HOST=$MINIKUBE_HOST PORT=30443 USE_K8S=true ./setup-test.bash   // run the test again make sure it's not a different tab or else MINIKUBE_HOST and PORT variable need to re-enter
+
+
+
+
+
+
+
+
+
+
+======================== probes for liveness and readiness ========
+
+
+
+$ kubectl exec -it deploy/product -- curl localhost/actuator/health/liveness -s | jq .  // get product's liveness probe
+
+
+$ kubectl exec -it deploy/product -- curl localhost/actuator/health/readiness -s | jq . // shows what it depends on. It needs other services to be ready first.
+
+
+$ kubectl delete namespace hands-on   // "clean up". Deleting the namespace will recursively delete hte resource that exist in the namespace, including
+									  // information regarding the Helm installation
+
+
+$ helm uninstall hands-on-dev-env  // uninstall what helm command installed.
+
+
 
 
 

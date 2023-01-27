@@ -70,7 +70,7 @@ spring.cloud.stream.bindings.messageProcessor-in-0.consumer.instanceIndex: 1
 
 spring.config.activate.on-profile: prod
 
-spring.datasource.url: jdbc:postgresql://172.17.0.1:3306/reviewdb # TODO:change IP address
+spring.datasource.url: jdbc:postgresql://172.17.0.1:5432/reviewdb # TODO:change IP address
 
 logging:
   level:
