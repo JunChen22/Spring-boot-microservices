@@ -1,6 +1,6 @@
 TODO: add gRPC and test and performance/speed difference between REST API.
 
-TODO: add local/different envoriment/profile in docker
+TODO: add local/different environment/profile in docker
 TODO: add a profile to run config server locally, it requires token to get local config
 
 
@@ -14,3 +14,6 @@ TODO: split the long commands in README.MD for better readability
 TODO: add picture of the landscape
 
 
+TODO: update readme a lot of changes after being deployed in kubernetes
+
+TODO: still need to figure out how to run partition and kafka in kubernetes

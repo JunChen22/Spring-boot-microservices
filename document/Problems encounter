@@ -205,3 +205,13 @@ http://auth-server:9999 changes to just http://auth-server without port number w
 problem: now it runs but isn't working
 // couldn't get the config file
 
+Q: unable to get configuration from configuration server
+A: check gateway endpoint, config-server security actuator permit all , and other...
+
+Q: get error after trying to run staging/product environment $ helm install hands-on-pro-env kubernetes/helm/environments/prod-env/ -n hands-on --create-namespace
+Error: INSTALLATION FAILED: rendered manifests contain a resource that already exists.
+ Unable to continue with install: Secret "config-client-credentials" in namespace "hands-on" exists and cannot be
+ imported into the current release: invalid ownership metadata; annotation validation error: key "meta.helm.sh/release-name"
+ must equal "hands-on-pro-env": current value is "hands-on-dev-env"
+
+A: delete the previous namespace hands-on $ kubectl delete namespace hands-on

@@ -200,7 +200,6 @@ helm install --dry-run --debug hands-on-dev-env kubernetes/helm/environments/dev
 $ helm install hands-on-dev-env kubernetes/helm/environments/dev-env/ -n hands-on --create-namespace
 
 
-
 // set the newly created namespace as the default namespace for kubectl
 // start
 $ kubectl config set-context $(kubectl config current-context) --namespace=hands-on
@@ -220,10 +219,6 @@ $ kubectl get pods --watch
 
 // to show the docker images used
 $ kubectl get pods -o json | jq .items[].spec.containers[].image
-
-
-
-
 
 
 
@@ -328,32 +323,80 @@ remove the increased timeout setting in kubernetes/helm/environments/dev-env/val
 $ HOST=$MINIKUBE_HOST PORT=30443 USE_K8S=true ./setup-test.bash   // run the test again make sure it's not a different tab or else MINIKUBE_HOST and PORT variable need to re-enter
 
 
-
-
-
-
-
-
-
-
 ======================== probes for liveness and readiness ========
 
-
-
 $ kubectl exec -it deploy/product -- curl localhost/actuator/health/liveness -s | jq .  // get product's liveness probe
-
-
 $ kubectl exec -it deploy/product -- curl localhost/actuator/health/readiness -s | jq . // shows what it depends on. It needs other services to be ready first.
-
-
 $ kubectl delete namespace hands-on   // "clean up". Deleting the namespace will recursively delete hte resource that exist in the namespace, including
 									  // information regarding the Helm installation
-
 
 $ helm uninstall hands-on-dev-env  // uninstall what helm command installed.
 
 
 
+======================= Deploying to Kubernetes for staging and production environment ================================
+database and message queue is running outside kubernetes
+deploying to staging and production environment is to perform quality assurance(QA) and user acceptance tests(UATs). It's configured closes to
+the production environment as possible. To verify the new release not only meets functional requirement and non-functional requirement. For example,
+performance, robustness, scalability and resilience.
+
+Changes in environment need to made for staging or production.
+
+- Resource manager should run outside of the Kubernetes cluster. Running stateless containers. Like databases and queue manager/message queue.
+
+- Lockdown:
+	- For security reasons, things like actuator endpoints and log levels need to be constrained in a production environment.
+	- Externally exposed endpoints should also be reviewed from a security perspective. For example, access to the configuration server
+	  should most probably be locked down ina production environment, but it's exposed here for convenience.
+	- Docker image tag must be specified to be able to track which version of the microservices have been deployed.
+
+- Scale up available resources:
+	- to meet both high availability and high load, run at least two pods per deployment.
+	- increase amount of memory and CPU that are allowed to be use per pod.
+
+- Set up a production-ready Kubernetes cluster:
+	- recommended to use one of the managed Kubernetes services provided by the leading cloud providers.
+
+
+172.17.0.1 IP address for the Docker engine in the Minikube instance // might need to change since the book is running Minikube as standalone and not
+																	 // running Minikube inside docker.
 
 
 
+$ eval $(minikube docker-env)  // could check it with $ minikube status
+$ for f in kubernetes/helm/components/*; do helm dep up $f; done
+$ for f in kubernetes/helm/environments/*; do helm dep up $f; done
+
+// tag all the image to v1
+$ docker tag hands-on/auth-server hands-on/auth-server:v1
+$ docker tag hands-on/config-server hands-on/config-server:v1
+$ docker tag hands-on/gateway hands-on/gateway:v1
+$ docker tag hands-on/product-composite-service hands-on/product-composite-service:v1
+$ docker tag hands-on/product-service hands-on/product-service:v1
+$ docker tag hands-on/recommendation-service hands-on/recommendation-service:v1
+$ docker tag hands-on/review-service hands-on/review-service:v1
+
+
+$ kubectl delete namespace hands-on
+$ helm dep ls kubernetes/helm/environments/prod-env
+$ helm template kubernetes/helm/environments/prod-env
+$ helm install hands-on-pro-env kubernetes/helm/environments/prod-env/ -n hands-on --create-namespace
+$ kubectl config set-context $(kubectl config current-context) --namespace=hands-on
+
+
+$ kubectl get pods -o json | jq .items[].spec.containers[].image   // list of running pods
+$ MINIKUBE_HOST=$(minikube ip)
+$ CONFIG_SERVER_USR=prod-usr CONFIG_SERVER_PWD=prod-pwd HOST=$MINIKUBE_HOST PORT=30443 USE_K8S=true ./setup-test.bash
+
+
+//clean up
+$ docker rmi hands-on/config-server:v1
+$ docker rmi hands-on/product-composite-service:v1
+$ docker rmi hands-on/gateway:v1
+$ docker rmi hands-on/auth-server:v1
+$ docker rmi hands-on/product-service:v1
+$ docker rmi hands-on/recommendation-service:v1
+$ docker rmi hands-on/review-service:v1
+$ kubectl delete namespace hands-on
+eval $(minikube docker-env)
+docker-compose down
