@@ -363,6 +363,7 @@ Changes in environment need to made for staging or production.
 
 
 
+$ kubectl delete namespace hands-on
 $ eval $(minikube docker-env)  // could check it with $ minikube status
 $ for f in kubernetes/helm/components/*; do helm dep up $f; done
 $ for f in kubernetes/helm/environments/*; do helm dep up $f; done
@@ -376,11 +377,9 @@ $ docker tag hands-on/product-service hands-on/product-service:v1
 $ docker tag hands-on/recommendation-service hands-on/recommendation-service:v1
 $ docker tag hands-on/review-service hands-on/review-service:v1
 
-
-$ kubectl delete namespace hands-on
 $ helm dep ls kubernetes/helm/environments/prod-env
 $ helm template kubernetes/helm/environments/prod-env
-$ helm install hands-on-pro-env kubernetes/helm/environments/prod-env/ -n hands-on --create-namespace
+$ helm install hands-on-pro-env kubernetes/helm/environments/prod-env/ -n hands-on --create-namespace  // or upgrade instead of install when update
 $ kubectl config set-context $(kubectl config current-context) --namespace=hands-on
 
 

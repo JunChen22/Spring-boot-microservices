@@ -11,12 +11,6 @@ dependencies:
 - name: postgres
   repository: file://../../components/postgres
   version: 1.0.0
-- name: config-server
-  repository: file://../../components/config-server
-  version: 1.0.0
-- name: gateway
-  repository: file://../../components/gateway
-  version: 1.0.0
 - name: auth-server
   repository: file://../../components/auth-server
   version: 1.0.0

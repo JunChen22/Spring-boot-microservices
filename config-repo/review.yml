@@ -7,8 +7,6 @@ spring.jpa.hibernate.ddl-auto: update
 spring:
   datasource:
     url: jdbc:postgresql://localhost/reviewdb # need to change localhost for docker-compose
-    username: postgres
-    password: password
     driverClassName: org.postgresql.Driver
     initialization-mode: always  #commend it out if using exisitng database // replaces spring.datasource.initialization-mode
 

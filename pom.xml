@@ -19,7 +19,6 @@
 		<module>api</module>
 		<module>spring-cloud/gateway</module>
 		<module>spring-cloud/authorization-server</module>
-		<module>spring-cloud/config-server</module>
 	</modules>
 
 	<parent>

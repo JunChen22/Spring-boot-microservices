@@ -3,7 +3,6 @@ server.port: 8443
 server.ssl:
   key-store-type: PKCS12
   key-store: classpath:keystore/edge.p12
-  key-store-password: password
   key-alias: localhost
 
 spring.cloud.gateway.routes:
@@ -38,13 +37,6 @@ spring.cloud.gateway.routes:
     predicates:
       - Path=/error/**
 
-  - id: config-server
-    uri: ${spring.cloud.config.uri}
-    predicates:
-      - Path=/config/**
-    filters:
-      - RewritePath=/config/(?<segment>.*), /$\{segment}
-
 spring.security.oauth2.resourceserver.jwt.issuer-uri: http://${app.auth-server}
 # if you want to change from local authorization server to Auth0 : https://${TENANT}/
 # spring.security.oauth2.resourceserver.jwt.issuer-uri: https://dev-junc.us.auth0.com/
@@ -59,7 +51,6 @@ logging:
     org.springframework.web.server.adapter.HttpWebHandlerAdapter: TRACE
 
 ---
-
 spring.config.activate.on-profile: prod
 
 logging:
