@@ -215,3 +215,17 @@ Error: INSTALLATION FAILED: rendered manifests contain a resource that already e
  must equal "hands-on-pro-env": current value is "hands-on-dev-env"
 
 A: delete the previous namespace hands-on $ kubectl delete namespace hands-on
+
+
+
+Q: testing kubernetes after gateway is replaced with ingress and there's no response
+A: check if addons is enabled in minikube.
+    $ minikube addons enable "your addon name"
+
+
+Q: rabbit MQ unable to deploy in kubernetes after removing config server and using configmap and secret.
+    giving readiness probe error/refused.
+    "readiness probe failed: Get "http://172.17.0.11:15672/api/aliveness-test/%2F": dial tcp 172.17.0.11:15672: connect: connection refused"
+
+A: readinessProbe.httpGet.httpHeaders value need to be changed.
+

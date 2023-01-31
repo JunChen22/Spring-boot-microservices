@@ -29,8 +29,6 @@ $ unset COMPOSE_FILE
 rabbitmq
 localhost:15672   // username and password : guest
 
-https://localhost:8443/eureka/web  // username: u password: p     // being replace in kubernetes build in service discovery
-
 ```
 Spring-boot-microservice 
 ├── product-composite-service -- agregated service 
@@ -39,26 +37,26 @@ Spring-boot-microservice
 │     └── review-service
 ├── spring-cloud               -- spring cloud servers/functionalities
 │     ├── Authorization server -- can run OAuth2 or local 
-│     ├── Config server / centralized configuration server
 │     └── Gateway / Edge server
 ├── kubernetes
 │     ├── Helm
-│     │     ├── common -- shared by all component
-│     │     ├── components -- kubernete/helm configuration for each component
+│     │     ├── common -- shared by all component , boiler plate
+│     │     ├── components -- kubernete/helm configuration for each component/services
 │     │     └── environments
-│     │           ├── dev-env
-│     │           └── prod-env
+│     │           ├── dev-env -- 
+│     │           └── prod-env  -- database and stateless services are deployed separatly.   
 │     ├── EFK  -- Elasticsearch,Fluentd, Kibana stack
 │     ├── grafana
 │     └── 
 ├── util - helper classes hanlding HTTP info and exception
 ├── api - API definitions
 ├── config-repo   -- centralized config files location
-├── keystore   -- used by gateway as
+├── keystore   -- used by gateway as TLS certificate.
 ├── auth0 -- used when changing authorization from local to Oauth2
-└── .env   -- environment variable
+└── .env   -- environment variable during docker-compose up , at run time 
 
-* Spring cloud Eureka / discovery service is replaced with Kubernetes Ingress for discovery service.
+* Spring cloud Eureka / discovery service is replaced with Kubernetes proxy object for discovery service.
+  and gateway with Ingress 
 * resilience4J and distributed tracing is part of the services(only product-compositer service for resilience4J).
 ```
 
@@ -147,14 +145,6 @@ testing other docker-compose needs to post a productId 2 request
 
 could also scale up a particular service in docker
 $ docker-compose up -d --scale review=2
-
-
-
-
-
-
-
-
 
 
 Testing urls
@@ -251,14 +241,7 @@ $ curl -k https://reader:secret@localhost:8443/oauth2/token \
 
 then an access token with read scope will be given.
 
-
-
-
-
-
-
 getting a reader authorization code.
-
 
 https://localhost:8443/oauth2/authorize?response_type=code&client_id=writer&redirect_uri=https://my.redirect.uri&scope=product:read+product:write&state=72489
 
@@ -275,12 +258,6 @@ curl -k https://writer:secret@localhost:8443/oauth2/token \
 ```
 
 then an access token with create and delete scope will be given.
-
-
-
-
-
-
 
 
 ### Changing authorization server to Oauth
@@ -309,8 +286,6 @@ export READER_CLIENT_SECRET=...
 
 
 $ curl https://${TENANT}/.well-known/openid-configuration -s | jq to show information about ur tenant domain
-
-
 
 
 ```

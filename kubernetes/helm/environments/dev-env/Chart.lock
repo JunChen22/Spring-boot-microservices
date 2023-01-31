@@ -29,5 +29,5 @@ dependencies:
 - name: zipkin-server
   repository: file://../../components/zipkin-server
   version: 1.0.0
-digest: sha256:bfc22ff1d0906a50033f4ffb0833905313b2db337782f882abeb4109e58082bf
-generated: "2023-01-25T01:45:03.99056224-05:00"
+digest: sha256:bd41352edadb0a75e871ef25f990f9798428d5bbd9e06970b934e420c86630b6
+generated: "2023-01-30T02:53:18.732091275-05:00"

@@ -22,9 +22,7 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-@SpringBootTest(webEnvironment = RANDOM_PORT, properties = {
-		"spring.cloud.config.enabled=false"
-})
+@SpringBootTest(webEnvironment = RANDOM_PORT, properties = {"spring.sleuth.mongodb.enabled=false"})
 class ProductServiceApplicationTests extends MongoDbTestBase{
 	@Autowired
 	private WebTestClient client;

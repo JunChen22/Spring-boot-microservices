@@ -161,6 +161,34 @@ with helm deploy
 
 
 
+
+
+
+charts -
+
+
+common commands
+
+create - used to create new charts
+
+dependency update or (dep up for short)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 minikube start or delete to start or end "reset"
 
 minikube addons list
@@ -170,11 +198,12 @@ minikube addons enable metrics-server
 
 $ eval $(minikube docker-env)  // could check it with $ minikube status
 
-$ for f in kubernetes/helm/components/*; do helm dep up $f; done
 
+// update all dependency, dep up short for dependency update
+$ for f in kubernetes/helm/components/*; do helm dep up $f; done
 $ for f in kubernetes/helm/environments/*; do helm dep up $f; done
 
-$ helm dep ls kubernetes/helm/environments/dev-env
+$ helm dep ls kubernetes/helm/environments/dev-env   // show dependencies in dev-env
 
 
 // avoid slow deployment
@@ -184,8 +213,8 @@ $ docker pull rabbitmq:3.8.11-management
 $ docker pull openzipkin/zipkin:2.23.2
 
 
-$ helm template kubernetes/helm/environments/dev-env
-
+$ helm template kubernetes/helm/environments/dev-env // renders/show the all the definition files created by the template
+                                                        // show what it would the kubernetes file look like when all put together
 
 // to verify that the kubernetes cluster will actually accept the rendered manifest, a
 // dry run of the installation.
@@ -399,3 +428,64 @@ $ docker rmi hands-on/review-service:v1
 $ kubectl delete namespace hands-on
 eval $(minikube docker-env)
 docker-compose down
+
+
+
+
+
+
+Netflix Eureka replaced with Kubernetes Service object and kube-proxy for service discovery
+Spring cloud gateway is replaced with Kubernetes Ingress but still kept for auth0 connection
+Spring config server replaced with configMap and secret.
+
+$ helm repo add jetstack https://charts.jetstack.io
+$ helm repo update
+
+$ helm install cert-manager jetstack/cert-manager --create-namespace --namespace cert-manager --version v1.3.1 --set installCRDs=true --wait
+$ kubectl get pods --namespace cert-manager // 3 pods in the cert-manager name space
+
+
+map minikube.me to the ipd address we can use to reach the Minikube instance by adding a line to /etc/hosts file
+
+$ sudo bash -c "echo $(minikube ip) minikube.me | tee -a /etc/hosts"
+$ cat /etc/hosts  // to verify it's been added
+
+
+$ eval $(minikube docker-env)
+$ mvn clean package
+$ docker-compose build
+
+$ docker pull postgres:10
+$ docker pull mongo:4.4.2
+$ docker pull rabbitmq:3.8.11-management
+$ docker pull openzipkin/zipkin:2.23.2
+
+$ for f in kubernetes/helm/components/*; do helm dep up $f; done
+$ for f in kubernetes/helm/environments/*; do helm dep up $f; done
+$ kubectl config set-context $(kubectl config current-context) --namespace=hands-on
+$ kubectl get certificates -w --output-watch-events  // on a seperate terminal window and watch the output
+$ helm install hands-on-dev-env kubernetes/helm/environments/dev-env -n hands-on --create-namespace --wait
+
+$ HOST=minikube.me PORT=443 USE_K8S=true ./setup-test.bash  // run test
+
+
+
+============= deploying for staging and production ========================
+
+$ kubectl delete namespace hands-on
+
+$ eval $(minikube docker-env)
+$ docker-compose up -d mongo postgres rabbitmq
+
+$ docker tag hands-on/product-composite-service hands-on/product-composite-service:v1
+$ docker tag hands-on/auth-server hands-on/auth-server:v1
+$ docker tag hands-on/product-service hands-on/product-service:v1
+$ docker tag hands-on/recommendation-service hands-on/recommendation-service:v1
+$ docker tag hands-on/review-service hands-on/review-service:v1
+
+$ helm install hands-on-prod-env kubernetes/helm/environments/prod-env -n hands-on --create-namespace --wait
+
+$ HOST=minikube.me PORT=443 USE_K8S=true ./setup-test.bash  // run test
+
+
+
