@@ -281,9 +281,6 @@ A: work around is switch tab/terminal
 
 
 
-
-
-
 // testing Spring boot's graceful shutdown and probes for liveness and readiness
 
 
@@ -339,9 +336,6 @@ kubectl logs -f --tail=0 -l app.kubernetes.io/name=product
 kubectl rollout restart deploy/product  // not all request are allowed to terminate gracefully before the application was stopped.
 										// The log message "Graceful shutdown aborted with one or more requests still active". Indicates that
 										// at least one request was not allowed to complete before the application was stopped.
-
-
-
 
 
 // clean up after the test
@@ -489,3 +483,24 @@ $ HOST=minikube.me PORT=443 USE_K8S=true ./setup-test.bash  // run test
 
 
 
+when running kubernetes/minikube it will interfer with docker-compoes,
+auth server can not start properly, asking for config file,
+I'm guessing the volume is being used so docker-compose can't access it.
+A: I turned off minikube completely then it worked.
+	$ minikube stop
+
+
+
+
+
+gate isn't being used in kubernetes
+
+partition and kafka isnt on kubernetes but still here in case if you need it.
+they have value passed in them
+
+
+
+
+
+
+docker-compose runs but still need to test the cert manager vs p12
