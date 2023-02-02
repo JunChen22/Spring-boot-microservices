@@ -4,30 +4,7 @@
 Simple microservice project from Hands-On Microservices with Spring Boot and Spring Cloud By Magnus Larsson.
 . Major difference is Maven instead of Gradle and Postgres instead of MySQL.
 
------------
-
-### Plans
-- microservices created using spring boot
-- change it to using spring cloud
-- then containerized it and deployed to kubernetes
-
 -------------------
-
-### to run the program
-
-$ mvn clean package     # build and package
-$ docker-compose build  
-$ docker-compose up
-$ setup-test.bash    # setup test data and simple test
-
-$ export COMPOSE_FILE=docker-compose-partitions.yml // or other docker-compose files
-$ docker-compose build
-$ docker-compose up
-$ unset COMPOSE_FILE
-
-
-rabbitmq
-localhost:15672   // username and password : guest
 
 ```
 Spring-boot-microservice 
@@ -51,7 +28,7 @@ Spring-boot-microservice
 ├── util - helper classes hanlding HTTP info and exception
 ├── api - API definitions
 ├── config-repo   -- centralized config files location
-├── keystore   -- used by gateway as TLS certificate.
+├── keystore   -- used by gateway as TLS certificate.  -- replaced with cert-manager in Kubernetes.
 ├── auth0 -- used when changing authorization from local to Oauth2
 └── .env   -- environment variable during docker-compose up , at run time 
 
@@ -59,6 +36,45 @@ Spring-boot-microservice
   and gateway with Ingress 
 * resilience4J and distributed tracing is part of the services(only product-compositer service for resilience4J).
 ```
+
+### to run the program. There are two ways to run the program, in Docker or in Kubernetes.
+
+Run in docker
+$ mvn clean package     # build and package
+$ docker-compose build  
+$ docker-compose up
+$ setup-test.bash    # setup test data and simple test
+
+$ export COMPOSE_FILE=docker-compose-partitions.yml // or other docker-compose files
+$ docker-compose build
+$ docker-compose up
+$ unset COMPOSE_FILE
+
+Run in Kubernetes/Minikube
+$ mvn clean package
+$ minikube start  // I use docker container as minikube driver
+minikube addons enable ingress
+$ eval $(minikube docker-env)
+
+$ for f in kubernetes/helm/components/*; do helm dep up $f; done
+$ for f in kubernetes/helm/environments/*; do helm dep up $f; done
+$ helm dep ls kubernetes/helm/environments/dev-env   // show dependencies in dev-env
+
+
+$ docker pull postgres:10
+$ docker pull mongo:4.4.2
+$ docker pull rabbitmq:3.8.11-management
+$ docker pull openzipkin/zipkin:2.23.2
+
+$ helm template kubernetes/helm/environments/dev-env // renders/show the all the definition files created by the template
+
+$ helm install hands-on-dev-env kubernetes/helm/environments/dev-env/ -n hands-on --create-namespace
+
+$ kubectl config set-context $(kubectl config current-context) --namespace=hands-on
+
+rabbitmq
+localhost:15672   // username and password : guest
+
 
 ### Tech stack
 
