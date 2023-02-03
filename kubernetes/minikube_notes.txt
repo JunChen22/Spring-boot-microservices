@@ -504,3 +504,25 @@ they have value passed in them
 
 
 docker-compose runs but still need to test the cert manager vs p12
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+================================== Istio note
+
+Istio
+A service mesh is an infrastructure layer that controls and observes the communication between services, for example,
+microservices. The capabilities in a service mesh, for example, observability, security, policy enforcement, resilience,
+and traffic management, are implemented by controlling and monitoring all internal communication inside the service mesh,
+that is, between the microservices in the service mesh.
