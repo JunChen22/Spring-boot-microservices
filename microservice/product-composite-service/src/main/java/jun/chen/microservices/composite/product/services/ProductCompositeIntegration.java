@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.http.HttpHeaders;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
@@ -73,25 +74,39 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
     }
 
     @Override
+    public Mono<Product> createProduct(Product body) {
+
+        return Mono.fromCallable(() -> {
+            sendMessage("products-out-0", new Event(CREATE, body.getProductId(), body));
+            return body;
+        }).subscribeOn(publishEventScheduler);
+    }
+
+    @Override
     @Retry(name = "product")
     @TimeLimiter(name = "product")
     @CircuitBreaker(name = "product", fallbackMethod = "getProductFallbackValue")
-    public Mono<Product> getProduct(int productId, int delay, int faultPercent) {
+    public Mono<Product> getProduct(HttpHeaders headers, int productId, int delay, int faultPercent) {
 
         URI url = UriComponentsBuilder.fromUriString(PRODUCT_SERVICE_URL
                 + "/product/{productId}?delay={delay}&faultPercent={faultPercent}").build(productId, delay, faultPercent);
 
         LOG.debug("Will call the getProduct API on URL: {}", url);
-
-        return webClient.get().uri(url).retrieve().bodyToMono(Product.class)
-                .log(LOG.getName(), FINE)
+        System.out.println("at here" + url);
+        return webClient.get().uri(url)
+                .headers(h -> h.addAll(headers))
+                .retrieve().bodyToMono(Product.class).log(LOG.getName(), FINE)
                 .onErrorMap(WebClientResponseException.class, ex -> handleException(ex));
     }
 
-    private Mono<Product> getProductFallbackValue(int productId, int delay, int faultPercent, CallNotPermittedException ex) {
+    private Mono<Product> getProductFallbackValue(HttpHeaders headers, int productId, int delay, int faultPercent, CallNotPermittedException ex) {
 
         LOG.warn("Creating a fail-fast fallback product for productId = {}, delay = {}, faultPercent = {} and exception = {} ",
                 productId, delay, faultPercent, ex.toString());
+
+        if (productId < 1) {
+            throw new InvalidInputException("Invalid productId: " + productId);
+        }
 
         if (productId == 13) {
             String errorMessage = "Product Id: " + productId + " not found in fallback cache!";
@@ -100,46 +115,6 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
         }
 
         return Mono.just(new Product(productId, "Fallback product" + productId, productId, serviceUtil.getServiceAddress()));
-    }
-
-
-
-    @Override
-    public Flux<Recommendation> getRecommendations(int productId) {
-
-        URI url = UriComponentsBuilder.fromUriString(RECOMMENDATION_SERVICE_URL + "/recommendation?productId={productId}").build(productId);
-
-        LOG.debug("Will call the getRecommendations API on URL: {}", url);
-
-        // Return an empty result if something goes wrong to make it possible for the composite service to return
-        // partial response.
-        return webClient.get().uri(url).retrieve().bodyToFlux(Recommendation.class)
-                .log(LOG.getName(), FINE)
-                .onErrorResume(error -> empty());
-    }
-
-    @Override
-    public Flux<Review> getReviews(int productId) {
-
-        URI url = UriComponentsBuilder.fromUriString(REVIEW_SERVICE_URL + "/review?productId={productId}")
-                .build(productId);
-
-        LOG.debug("Will call the getReviews API on URL: {}", url);
-
-        // Return an empty result if something goes wrong to make it possible for the composite service to return
-        // partial response
-        return webClient.get().uri(url).retrieve().bodyToFlux(Review.class)
-                .log(LOG.getName(), FINE)
-                .onErrorResume(error -> empty());
-    }
-
-    @Override
-    public Mono<Product> createProduct(Product body) {
-
-        return Mono.fromCallable(() -> {
-            sendMessage("products-out-0", new Event(CREATE, body.getProductId(), body));
-            return body;
-        }).subscribeOn(publishEventScheduler);
     }
 
     @Override
@@ -157,6 +132,20 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
     }
 
     @Override
+    public Flux<Recommendation> getRecommendations(HttpHeaders headers, int productId) {
+
+        URI url = UriComponentsBuilder.fromUriString(RECOMMENDATION_SERVICE_URL + "/recommendation?productId={productId}").build(productId);
+
+        LOG.debug("Will call the getRecommendations API on URL: {}", url);
+
+        // Return an empty result if something goes wrong to make it possible for the composite service to return
+        // partial response.
+        return webClient.get().uri(url).headers(h -> h.addAll(headers)).retrieve().bodyToFlux(Recommendation.class)
+                .log(LOG.getName(), FINE)
+                .onErrorResume(error -> empty());
+    }
+
+    @Override
     public Mono<Void> deleteRecommendations(int productId) {
 
         return Mono.fromRunnable(() -> sendMessage("recommendations-out-0", new Event(DELETE, productId, null)))
@@ -171,6 +160,20 @@ public class ProductCompositeIntegration implements ProductService, Recommendati
         }).subscribeOn(publishEventScheduler);
     }
 
+    @Override
+    public Flux<Review> getReviews(HttpHeaders headers, int productId) {
+
+        URI url = UriComponentsBuilder.fromUriString(REVIEW_SERVICE_URL + "/review?productId={productId}")
+                .build(productId);
+
+        LOG.debug("Will call the getReviews API on URL: {}", url);
+
+        // Return an empty result if something goes wrong to make it possible for the composite service to return
+        // partial response
+        return webClient.get().uri(url).headers(h -> h.addAll(headers)).retrieve().bodyToFlux(Review.class)
+                .log(LOG.getName(), FINE)
+                .onErrorResume(error -> empty());
+    }
 
     @Override
     public Mono<Void> deleteReviews(int productId) {

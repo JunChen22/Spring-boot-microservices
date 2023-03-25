@@ -594,6 +594,16 @@ shut down and clean up.
 $ docker-compose down
 $ unset COMPOSE_FILE
 
+
+
+
+
+Difficult part to understand is ,at least for me, is 
+- Developing Reactive microservices
+- Securing Access to APIs with OAuth 2.0
+- Deploying to Kubernetes
+- Using Service Mesh in Kubernetes
+
 ### material:
 - Shell scripting
   https://bash.cyberciti.biz/guide/Shebang
@@ -602,4 +612,4 @@ $ unset COMPOSE_FILE
 - docker
 - https://www.baeldung.com/spring-security-oauth-auth-server
 - https://microservices.io/
-
+- https://kubernetes.io/docs/reference/kubectl/cheatsheet/

@@ -13,3 +13,10 @@ TODO: still need to figure out how to run partition and kafka in kubernetes
         - it does run but it doesn't get to deploy to kubernetes only on local machine
 
 TODO: clean up the kuberentes note and READ ME
+
+
+
+
+getting 202 instead of 200 for test.
+accepted vs ok
+

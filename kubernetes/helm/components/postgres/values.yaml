@@ -1,9 +1,12 @@
 fullnameOverride: postgres
 
+annotations:
+  sidecar.istio.io/inject: "false"
+
 image:
   repository: registry.hub.docker.com/library
   name: postgres
-  tag: 10
+  tag: 9.6.10
   pullPolicy: IfNotPresent
 
 ports:
@@ -11,4 +14,5 @@ ports:
 
 service:
   ports:
-    - port: 5432
+    - name: postgres
+      port: 5432

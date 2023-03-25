@@ -1,0 +1,469 @@
+https://www.youtube.com/watch?v=16fgzklcF7Y
+
+
+install istioctl
+
+https://istio.io/latest/docs/setup/install/helm/
+
+
+Istio notes
+
+- Service mesh
+
+kubectl -n  istio-system  get all
+
+
+
+download Istio/istioctl
+
+https://istio.io/latest/docs/ops/diagnostic-tools/istioctl/
+$ curl -sL https://istio.io/downloadIstioctl | sh -
+
+$ export PATH=$HOME/.istioctl/bin:$PATH
+
+$ istioctl proxy-status   // check if install success
+
+
+
+
+
+======================= deploying with service mesh ========================
+
+$ minikube status
+
+$ istioctl experimental precheck
+$ istioctl install --skip-confirmation --set profile=demo --set meshConfig.accessLogFile=/dev/stdout --set meshConfig.accessLogEncoding=JSON
+$ kubectl -n istio-system wait --timeout=600s --for=condition=available deployment --all
+
+
+$istio_version=$(istioctl version --short --remote=false)
+$ echo "Installing integrations for Istio v$istio_version"
+
+
+// test, should rest code 200.
+$ kubectl apply -n istio-system -f https://raw.githubusercontent.com/istio/istio/${istio_version}/samples/addons/kiali.yaml
+$ kubectl apply -n istio-system -f https://raw.githubusercontent.com/istio/istio/${istio_version}/samples/addons/jaeger.yaml
+$ kubectl apply -n istio-system -f https://raw.githubusercontent.com/istio/istio/${istio_version}/samples/addons/prometheus.yaml
+$ kubectl apply -n istio-system -f https://raw.githubusercontent.com/istio/istio/${istio_version}/samples/addons/grafana.yaml
+
+
+
+$ kubectl -n istio-system wait --timeout=600s --for=condition=available deployment --all
+
+
+
+
+
+$ kubectl -n istio-system get deploy
+
+
+
+
+
+Setting up access to Istio services
+
+// install cert-manager
+$ helm install cert-manager jetstack/cert-manager --create-namespace --namespace cert-manager --version v1.3.1 --set installCRDs=true --wait
+$ helm upgrade --install istio-hands-on-addons kubernetes/helm/environments/istio-system -n istio-system --wait
+
+
+
+
+
+
+// on a separate terminal
+$ minikube tunnel
+
+
+$ INGRESS_IP=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+$ echo $INGRESS_IP
+
+
+
+$ eval $(minikube docker-env)
+$ mvn clean package
+$ docker-compose build
+
+$ kubectl delete namespace hands-on
+$ kubectl apply -f kubernetes/hands-on-namespace.yml
+$ kubectl config set-context $(kubectl config current-context) --namespace=hands-on
+
+
+// update Helm dependencies
+$ for f in kubernetes/helm/components/*; do helm dep up $f; done
+$ for f in kubernetes/helm/environments/*; do helm dep up $f; done
+
+//
+helm install hands-on-dev-env kubernetes/helm/environments/dev-env -n hands-on --wait
+
+
+kubectl get pods    // all should be up and running. Use kubectl logs POD_NAME     or kubectl describe pod POD_NAME to see what wen't wrong
+
+then run the test script
+$ ./setup-test.bash
+
+or test it manually
+$ ACCESS_TOKEN=$(curl -k https://writer:secret@minikube.me/oauth2/token -d grant_type=client_credentials -s | jq .access_token -r)
+$ echo ACCESS_TOKEN=$ACCESS_TOKEN
+$ curl -ks https://minikube.me/product-composite/1 -H "Authorization: Bearer $ACCESS_TOKEN" | jq .productId
+
+
+
+==================================== observing the service mesh ========================
+
+
+Use Kiali with Jaeger to observe the service mesh
+
+https://tracing.minikube.me        // Jaeger web UI    (distributed tracing)
+https://kiali.minikube.me          // Kiali web UI     (observe a service mesh)
+
+
+ requests sent to the health endpoint
+ to 4004 port instead of 8443
+
+ use Siege to perform low-volume load test. To see the feature of Kiali like observe a service mesh in a web browser.
+ And see how Jaeger is used for distributed tracing.
+
+
+Since the certificate we used here is self-signed, web browser will not rely on it automatically.
+It will show danger for visiting it like accept at your own risk.
+
+// get token
+$ ACCESS_TOKEN=$(curl -k https://writer:secret@minikube.me/oauth2/token -d grant_type=client_credentials -s | jq .access_token -r)
+
+// echo token back for confirmation
+echo ACCESS_TOKEN=$ACCESS_TOKEN
+
+// let Siege use the token for testing
+siege https://minikube.me/product-composite/1 -H "Authorization: Bearer $ACCESS_TOKEN" -c1 -d1 -v
+
+
+The first command will get an OAuth 2.0/OIDC access token that will be used in the next command, where siege is used to submit one HTTP request per second to the product-composite API.
+
+
+ go to https://kiali.minikube.me/    username and password is admin and admin if asked for login info
+ go to Overview to see traffic and go to Graph to see animation and select the right Namespace.
+
+
+ go to https://tracing.minikube.me/
+ go to Search and select Product-composite.hands-on Service and Find Traces to show the metrics/traces.
+ It's the same tracing information as Zipkin.
+
+
+- How to protect external endpoints with HTTPS and certificates
+- How to require that external requests are authenticated using OAuth 2.0/OIDC access tokens
+- How to protect internal communication using mutual authentication (mTLS)
+
+
+
+
+
+Protecting external endpoints with HTTPS and certificates
+
+From the Setting up access to Istio services and Content in the _istio_base.yaml template sections, we learned that the Gateway objects use a TLS certificate stored in a Secret named hands-on-certificate for its HTTPS endpoints.
+
+The Secret is created by the cert-manager based on the configuration in the istio-system Helm chart. The chart's template, selfsigned-issuer.yaml, is used to define an internal self-signed CA and has the following content:
+
+
+
+in selfsigned-issuer.yaml, From the preceding manifests, we can see the following:
+
+    - A self-signed issuer named selfsigned-issuer.
+    - This issuer is used to create a self-signed certificate, named ca-cert.
+    - The certificate is given the common name hands-on-ca.
+    - Finally, a self-signed CA, ca-issuer, is defined using the certificate, ca-cert, as its root certificate. This CA will be used to issue the certificate used by the gateway objects.
+
+
+hands-on-certificate.yaml
+
+    - The certificate is named hands-on-certificate
+    - Its common name is set to minikube.me
+    - It specifies a few optional extra details about its subject (left out for clarity)
+    - All other hostnames are declared as Subject Alternative Names in the certificate
+    - It will use the issuer named ca-issuer declared above
+    - The cert-manager will store the TLS certificate in a Secret named hands-on-certificate
+
+
+When the istio-system Helm chart was installed, these templates were used to create the corresponding API objects in Kubernetes.
+This triggered the cert-manager to create the certificates and Secrets.
+
+
+
+
+To verify that it is these certificates that are used by the Istio ingress gateway,
+$ keytool -printcert -sslserver minikube.me | grep -E "Owner:|Issuer:"
+
+
+
+
+
+
+
+
+Authenticating external requests using OAuth 2.0/OIDC access tokens
+
+
+Istio Ingress Gateway can require and validate JWT-based OAuth 2.0/OIDC access tokens, in other words, protecting the microservices in the service mesh
+from external unauthenticated requests. For a recap on JWT, OAuth 2.0, and OIDC. Istio can also be configured to perform authorization but, as mentioned
+in the Introducing Istio API objects section, we will not use it.
+
+
+
+This is configured in the common Helm chart's template, _istio_base.yaml. The two manifests look like this:
+
+The two manifests are RequestAuthentication and AuthorizationPolicy
+
+The RequestedAuthentication named product-composite-requests-authentication requires a valid JWT-encoded access token
+  for requests sent to the product-composite service.
+- It selects service that it performs request authentication for based on a label selector, app.kubernetes.io/name: product-composite
+- It allows token from the issuer, http://auth-server
+- It will use the http://auth-server.hands-on.svc.cluster.local/oauth2/jwks URL to fetch a JSON Web Key Set. The key set
+  is to validate the digital signature of the access token.
+- It will forward the access token to the underlying services, in our case the product-composite microservice.
+
+The AuthorizationPolicy named product-composite-require-jwt is configured to allow all requests to the product-composite
+service; it will not apply any authorization rules.
+
+
+It can be a bit hard to understand whether Istio's RequestAuthentication is validating the access tokens or whether it is
+only the product-composite service that is performing the validation. One way to ensure that Istio is doing its job is to
+change the configuration of RequestAuthentication so that it always rejects access tokens.
+
+To verify that RequestAuthentication is in action, apply the following commands:
+
+// a normal request should return HTTP response status code 200(OK)
+$ ACCESS_TOKEN=$(curl -k https://writer:secret@minikube.me/oauth2/token -d grant_type=client_credentials -s | jq .access_token -r)
+$ echo ACCESS_TOKEN=$ACCESS_TOKEN
+$ curl -k https://minikube.me/product-composite/1 -H "Authorization: Bearer $ACCESS_TOKEN" -i
+
+
+// Edit the RequestAuthentication object and temporarily change the issuer, for example, to http://auth-server-x:
+$ kubectl edit RequestAuthentication product-composite-request-authentication
+
+// retrieve the configuration details of a RequestAuthentication resource named product-composite-request-authentication in the YAML format.
+$ kubectl get RequestAuthentication product-composite-request-authentication -o yaml
+
+// make the same request and will have error 401 code and "Invalid_token"
+$ curl -k https://minikube.me/product-composite/1 -H "Authorization: Bearer $ACCESS_TOKEN" -i
+
+$ kubectl edit RequestAuthentication product-composite-request-authentication
+
+
+
+Suggested additional exercise: Try out the Auth0 OIDC provider, as described in Chapter 11,
+Securing Access to APIs (refer to the Testing with an external OpenID Connect provider section).
+Add your Auth0 provider to jwt-authentication-policy.yml. In my case, it appears as follows:
+
+  - jwtRules:
+      issuer: "https://dev-magnus.eu.auth0.com/"
+      jwksUri: "https://dev-magnus.eu.auth0.com/.well-known/jwks.json"
+
+
+
+
+Protecting internal communication using mutual authentication (mTLS)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ACCESS_TOKEN=$(curl -k https://writer:secret@minikube.me/oauth2/token -d grant_type=client_credentials -s | jq .access_token -r)
+
+echo ACCESS_TOKEN=$ACCESS_TOKEN
+
+siege https://minikube.me/product-composite/1 -H "Authorization: Bearer $ACCESS_TOKEN" -c1 -d1 -v
+
+
+
+Calls to RabbitMQ, MySQL, and MongoDB are not handled by Istio proxies, and therefore require manual configuration to be protected using TLS, if required.
+
+
+
+With this, we have seen all three security mechanisms in Istio in action.
+- protect external endpoints with HTTPS and certificates
+- require that external requests are authenticated using OAuth 2.0/OIDC access tokens
+- protect internal communication using mutual authentication (mTLS)
+
+
+============================ Securing the service mesh ================
+
+The template files can be found in the kubernetes/helm/environments/istio-system/templates folder.
+
+$ keytool -printcert -sslserver minikube.me | grep -E "Owner:|Issuer:"
+
+gets
+Owner: SERIALNUMBER=my-sn, CN=minikube.me, OU=my-ou, O=my-org, OID.2.5.4.17=my-pc, STREET=my-address, L=my-locality, ST=my-province, C=my-country
+Issuer: CN=hands-on-ca
+
+
+
+
+
+
+
+
+
+======================================= Testing resilience =========================================
+
+
+Testing resilience by injecting faults
+
+
+The definition says that 20% of the requests sent to the product service will be aborted with the HTTP status code 500 (Internal Server Error).
+
+
+
+// running siege to low volume testing
+$ ACCESS_TOKEN=$(curl -k https://writer:secret@minikube.me/oauth2/token -d grant_type=client_credentials -s | jq .access_token -r)
+$ echo ACCESS_TOKEN=$ACCESS_TOKEN
+$ siege https://minikube.me/product-composite/1 -H "Authorization: Bearer $ACCESS_TOKEN" -c1 -d1 -v
+
+// Apply the fault injection
+$ kubectl apply -f kubernetes/resilience-tests/product-virtual-service-with-faults.yml
+
+// Conclude the tests by removing the fault injection with the following command:
+$ kubectl delete -f kubernetes/resilience-tests/product-virtual-service-with-faults.yml
+
+
+Testing resilience by injecting delays
+
+
+// Create a temporary delay in the product service
+$ kubectl apply -f kubernetes/resilience-tests/product-virtual-service-with-delay.yml
+
+$ ACCESS_TOKEN=$(curl -k https://writer:secret@minikube.me/oauth2/token -d grant_type=client_credentials -s | jq .access_token -r)
+$ echo ACCESS_TOKEN=$ACCESS_TOKEN
+
+// send 6 requests
+$ for i in {1..6}; do time curl -k https://minikube.me/product-composite/1 -H "Authorization: Bearer $ACCESS_TOKEN"; done
+
+$ kubectl delete -f kubernetes/resilience-tests/product-virtual-service-with-delay.yml
+
+// could also check the state of the circuit breaker. closed = working, open = not working, and half_open = work but monitoring it
+$ curl -ks https://health.minikube.me/actuator/health | jq -r .components.circuitBreakers.details.product.details.state
+
+
+====================================== zero-downtime updates =========================================
+
+Istio's traffic management and routing capabilities and how they can be used to perform deployments of new versions
+of microservices without requiring any downtime.
+
+Kubernetes perform a rolling upgrade mechanism automates the entire process without requiring any downtime, but
+unfortunately provides no option to test the new version before all users are routed to it.
+
+Using Istio, we can deploy the new version, but initially route all users to the existing version (called the old version in this chapter).
+After that, we can use Istio's fine-grained routing mechanism to control how users are routed to the new and the old versions.
+
+Two popular upgrade strategies can be implemented using Istio:
+- Canary deploys - All users are routed to the old version, except for a group of selected test users who are routed to
+  the new version. When the test users have approved the new version, regular users can be routed to the new version using
+  a blue/green deploy.
+
+- Blue/green deploys - All users are switched to either blue or the green version, one being the new version and the other
+  being the old version. If something goes wrong when switching over the to the new version, it it very simple to switch
+  back to the old version. Using Istio, this strategy can be refined by gradually shifting users over to the new version.
+  Starting with 20% of the users and then slowly increasing the percentage. At all times, it is very easy to route all
+  users back to the old version if a fatal error is revealed in the new version.
+
+
+
+it is important to remember that a prerequisite for these types of upgrade strategies is that the upgrade is backward-compatible.
+Such an upgrade is compatible both in terms of APIs and message formats, which are used to communicate with other services and
+database structures. If the new version of the microservice requires changes to external APIs, message formats, or database
+structures that the old version can't handle, these upgrade strategies can't be applied.
+
+
+    We will start by deploying the v1 and v2 versions of the microservices, with routing configured to send all requests to the v1 version of the microservices.
+    Next, we will allow a test group to run canary tests; that is, we'll verify the new v2 versions of the microservices. To simplify the tests somewhat, we will only deploy new versions of the core microservices, that is, the product, recommendation, and review microservices.
+    Finally, we will start to move regular users over to the new versions using a blue/green deploy; initially, a small percentage of users and then, over time, more and more users until, eventually, they are all routed to the new version. We will also see how we can quickly switch back to the v1 version if a fatal error is detected in the new v2 version.
+
+
+
+
+
+
+
+
+
+
+
+
+
+Source code changes
+
+To be able to run multiple versions of a microservice concurrently, the Deployment objects and their corresponding Pods must have different names, for example, product-v1 and product-v2. There must, however, be only one Kubernetes Service object per microservice. All traffic to a specific microservice always goes through the same Service object, irrespective of what version of the Pod the request will be routed to in the end. To configure the actual routing rules for canary tests and blue/green deployment, Istio's VirtualService and DestinationRule objects are used. Finally, the values.yaml file in the prod-env Helm chart is used to specify the versions of each microservice that will be used in the production environment.
+
+Let's go through the details for each definition in the following subsections:
+
+    Virtual services and destination rules
+    Deployments and services
+    Tying things together in the prod-env Helm chart
+
+
+
+
+
+
+To split the traffic between two versions of a microservice, we need to specify the weight distribution between the two versions in a VirtualService, on the sender side. The virtual service will spread the traffic between two Subsets, called old and new. The exact meaning of the new and old subset is defined in a corresponding DestinationRule, on the receiver side. It uses labels to determine which Pods run the old and new versions of the microservice.
+
+To support canary tests, a routing rule is required in the virtual services that always routes the canary testers to the new subset. To identify canary testers, we will assume that requests from a canary tester contain an HTTP header named X-group with the value test.
+
+
+
+
+
+deploying prod-env
+
+// uninstall the development environment
+$ helm uninstall hands-on-dev-env
+$ kubectl get pods
+
+
+// start Postgres, MongoDB and RabbitMQ outside of kubernetes
+$ eval $(minikube docker-env)
+$ docker-compose up -d mongodb mysql rabbitmq
+
+// tag Docker images with v1 and v2 versions
+$ docker tag hands-on/auth-server hands-on/auth-server:v1
+$ docker tag hands-on/product-composite-service hands-on/product-composite-service:v1
+$ docker tag hands-on/product-service hands-on/product-service:v1
+$ docker tag hands-on/recommendation-service hands-on/recommendation-service:v1
+$ docker tag hands-on/review-service hands-on/review-service:v1
+
+$ docker tag hands-on/product-service hands-on/product-service:v2
+$ docker tag hands-on/recommendation-service hands-on/recommendation-service:v2
+$ docker tag hands-on/review-service hands-on/review-service:v2
+
+// Deploy the system landscape using Helm and wait for all deployments to complete
+$ helm install hands-on-prod-env kubernetes/helm/environments/prod-env -n hands-on --wait
+
+
+$ kubectl get pods
+
+
+
+
+
+
+========================================= Running it in local environment with Docker Compose =====================================
+To make sure that the source code of the microservices doesn't become dependent on a platform usch as Kubernetes
+or Istio from a functional perpective.
+
+
+
+
+$ USE_K8S=false HOST=localhost PORT=8443 HEALTH_URL=https://localhost:8443 ./test-em-all.bash start stop
+
+
+

@@ -11,6 +11,7 @@ import jun.chen.util.http.ServiceUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
@@ -52,7 +53,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Mono<Product> getProduct(int productId, int delay, int faultPercent) {
+    public Mono<Product> getProduct(HttpHeaders headers, int productId, int delay, int faultPercent) {
         if (productId < 1) throw new InvalidInputException("Invalid productId: " + productId);
 
         LOG.info("Will get product info for id={}", productId);

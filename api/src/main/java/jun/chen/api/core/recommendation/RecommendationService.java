@@ -1,5 +1,6 @@
 package jun.chen.api.core.recommendation;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -8,42 +9,20 @@ import java.util.List;
 
 public interface RecommendationService {
 
-    /**
-     * Sample usage:
-     *
-     * curl -X POST $HOST:$PORT/recommendation \
-     *   -H "Content-Type: application/json" --data \
-     *   '{"productId":123,"recommendationId":456,"author":"me","rate":5,"content":"yada, yada, yada"}'
-     *
-     * @param body
-     * @return
-     */
-    @PostMapping(
-            value    = "/recommendation",
-            consumes = "application/json",
-            produces = "application/json")
-    Mono<Recommendation> createRecommendation(@RequestBody Recommendation body);
+    Mono<Recommendation> createRecommendation(Recommendation body);
 
     /**
-     * Sample usage:
+     * Sample usage: "curl $HOST:$PORT/recommendation?productId=1".
      *
-     * curl $HOST:$PORT/recommendation?productId=1
-     *
-     * @param productId
-     * @return
+     * @param productId Id of the product
+     * @return the recommendations of the product
      */
     @GetMapping(
-            value    = "/recommendation",
+            value = "/recommendation",
             produces = "application/json")
-    Flux<Recommendation> getRecommendations(@RequestParam(value = "productId", required = true) int productId);
+    Flux<Recommendation> getRecommendations(
+            @RequestHeader HttpHeaders headers,
+            @RequestParam(value = "productId", required = true) int productId);
 
-    /**
-     * Sample usage:
-     *
-     * curl -X DELETE $HOST:$PORT/recommendation?productId=1
-     *
-     * @param productId
-     */
-    @DeleteMapping(value = "/recommendation")
-    Mono<Void> deleteRecommendations(@RequestParam(value = "productId", required = true)  int productId);
+    Mono<Void> deleteRecommendations(int productId);
 }

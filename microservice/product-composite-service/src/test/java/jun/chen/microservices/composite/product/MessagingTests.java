@@ -64,7 +64,7 @@ public class MessagingTests {
     @Test
     void createCompositeProduct1() {
         ProductAggregate composite = new ProductAggregate(1, "name", 1, null, null, null);
-        postAndVerifyProduct(composite, OK);
+        postAndVerifyProduct(composite, ACCEPTED);
 
         final List<String> productMessages = getMessages("products");
         final List<String> recommendationMessages = getMessages("recommendations");
@@ -87,7 +87,7 @@ public class MessagingTests {
         ProductAggregate composite = new ProductAggregate(1, "name", 1,
                 singletonList(new RecommendationSummary(1, "a", 1, "c")),
                 singletonList(new ReviewSummary(1, "a", "s", "c")), null);
-        postAndVerifyProduct(composite, OK);
+        postAndVerifyProduct(composite, ACCEPTED);
 
         final List<String> productMessages = getMessages("products");
         final List<String> recommendationMessages = getMessages("recommendations");
@@ -122,7 +122,7 @@ public class MessagingTests {
 
     @Test
     void deleteCompositeProduct() {
-        deleteAndVerifyProduct(1, OK);
+        deleteAndVerifyProduct(1, ACCEPTED);
 
         final List<String> productMessages = getMessages("products");
         final List<String> recommendationMessages = getMessages("recommendations");

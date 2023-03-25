@@ -229,3 +229,52 @@ Q: rabbit MQ unable to deploy in kubernetes after removing config server and usi
 
 A: readinessProbe.httpGet.httpHeaders value need to be changed.
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+The connection to the server 192.xxx.xx.x:8443 was refused - did you specify the right host or port?
+
+/etc/hosts
+192.xxx.xx.x minikube.me error
+10.98.233.154 minikube.me grafana.minikube.me kiali.minikube.me prometheus.minikube.me tracing.minikube.me kibana.minikube.me elasticsearch.minikube.me mail.minikube.me health.minikube.me
+
+
+
+
+
+
+
+
+chapter 18.
+
+couldn't deploy postgres. Only the service is deployed.
+A: The version of postgres I was using is 10 so it was causing problem. The name was too short causing to have
+"Error: INSTALLATION FAILED: Deployment in version "v1" cannot be handled as a Deployment:
+json: cannot unmarshal number into Go struct field ObjectMeta.spec.template.metadata.labels of type string".
+Change the version to a longer one fixed. changed from postgres:10 to postgres:9.6.10  .
+
+
+
+
+Q: getting error after applying
+    $helm upgrade --install istio-hands-on-addons kubernetes/helm/environments/istio-system/ -n istio-system --wait
+   Release "istio-hands-on-addons" does not exist. Installing it now.
+   Error: unable to build kubernetes objects from release manifest: [resource mapping not found for name: "hands-on-certificate" namespace: "" from "": no matches for kind "Certificate" in version "cert-manager.io/v1"
+   ensure CRDs are installed first, resource mapping not found for name: "ca-cert" namespace: "" from "": no matches for kind "Certificate" in version "cert-manager.io/v1"
+   ensure CRDs are installed first, resource mapping not found for name: "selfsigned-issuer" namespace: "" from "": no matches for kind "Issuer" in version "cert-manager.io/v1"
+   ensure CRDs are installed first, resource mapping not found for name: "ca-issuer" namespace: "" from "": no matches for kind "Issuer" in version "cert-manager.io/v1"
+   ensure CRDs are installed first]
+
+A: need to have cert-manager installed firs.
+   $ helm install cert-manager jetstack/cert-manager --create-namespace --namespace cert-manager --version v1.3.1 --set installCRDs=true --wait

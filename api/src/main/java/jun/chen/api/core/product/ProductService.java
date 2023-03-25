@@ -1,36 +1,32 @@
 package jun.chen.api.core.product;
 
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.HttpHeaders;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 import reactor.core.publisher.Mono;
 
 public interface ProductService {
 
-
-    @PostMapping(
-            value    = "/product",
-            consumes = "application/json",
-            produces = "application/json")
-    Mono<Product> createProduct(@RequestBody Product body);
+    Mono<Product> createProduct(Product body);
 
     /**
-     * Sample usage: curl $HOST:$PORT/product/1
+     * Sample usage: "curl $HOST:$PORT/product/1".
      *
-     * @param productId
+     * @param productId Id of the product
      * @return the product, if found, else null
      */
     @GetMapping(
-            value    = "/product/{productId}",
+            value = "/product/{productId}",
             produces = "application/json")
     Mono<Product> getProduct(
+            @RequestHeader HttpHeaders headers,
             @PathVariable int productId,
             @RequestParam(value = "delay", required = false, defaultValue = "0") int delay,
             @RequestParam(value = "faultPercent", required = false, defaultValue = "0") int faultPercent
     );
 
-
-    @DeleteMapping(value = "/product/{productId}")
-    Mono<Void> deleteProduct(@PathVariable int productId);
+    Mono<Void> deleteProduct(int productId);
 }

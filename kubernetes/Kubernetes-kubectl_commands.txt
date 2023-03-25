@@ -1,0 +1,6 @@
+I find the patch command useful when making a number of changes to the same objects to try something out, for example,
+to change the weight distribution in the routing rules. In this section, we will use the kubectl patch command to quickly
+ change the weight distribution in the routing rules between the v1 and v2 versions of the microservices. To get the state
+ of a virtual service after a few kubectl patch commands have been executed, a command such as kubectl get vs NNN -o yaml
+ can be issued. For example, to get the state of the virtual service of the product microservice, issue the following
+ command: kubectl get vs product -o yaml.

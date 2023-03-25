@@ -10,10 +10,12 @@ spring.cloud.stream.kafka.binder:
   defaultBrokerPort: 9092
 
 spring.cloud.stream.defaultBinder: rabbit
-spring.zipkin.sender.type: rabbit
 spring.sleuth.sampler.probability: 1.0
 
 # WARNING: Exposing all management endpoints over http should only be used during development, must be locked down in production!
+# changed to 4004 to reduce noise by the health checks performed by Kubernetes liveness and rediess probs. previous is
+# same port as the API requests.
+management.server.port: 4004
 management.endpoint.health.show-details: "ALWAYS"
 management.endpoints.web.exposure.include: "*"
 management.endpoint.health.probes.enabled: true
@@ -41,7 +43,6 @@ management.health.rabbit.enabled: false
 spring.cloud.stream.defaultBinder: kafka
 spring.kafka.bootstrap-servers: kafka:9092
 spring.cloud.stream.kafka.binder.replication-factor: 1
-spring.zipkin.sender.type: kafka
 
 ---
 

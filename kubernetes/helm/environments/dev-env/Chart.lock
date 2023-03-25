@@ -26,8 +26,5 @@ dependencies:
 - name: product-composite
   repository: file://../../components/product-composite
   version: 1.0.0
-- name: zipkin-server
-  repository: file://../../components/zipkin-server
-  version: 1.0.0
-digest: sha256:bd41352edadb0a75e871ef25f990f9798428d5bbd9e06970b934e420c86630b6
-generated: "2023-01-30T02:53:18.732091275-05:00"
+digest: sha256:3d425bfc743c010023537bbf3e02ec282697aeeeb176fe9d2cd60edbe4836588
+generated: "2023-03-18T00:43:51.466442069-04:00"

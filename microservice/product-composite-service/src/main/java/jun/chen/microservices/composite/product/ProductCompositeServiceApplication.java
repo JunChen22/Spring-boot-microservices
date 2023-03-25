@@ -19,7 +19,7 @@ import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 @SpringBootApplication
-@ComponentScan({"jun.chen.util", "jun.chen.microservices"})
+@ComponentScan("jun.chen")
 public class ProductCompositeServiceApplication {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ProductCompositeServiceApplication.class);
