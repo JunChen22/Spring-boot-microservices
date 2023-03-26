@@ -32,3 +32,9 @@ service:
     - port: 4004
       name: http-mgm
       targetPort: 4004
+
+annotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "4004"
+  prometheus.io/scheme: http
+  prometheus.io/path: "/actuator/prometheus"
