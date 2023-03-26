@@ -66,6 +66,9 @@ Setting up access to Istio services
 $ helm install cert-manager jetstack/cert-manager --create-namespace --namespace cert-manager --version v1.3.1 --set installCRDs=true --wait
 $ helm upgrade --install istio-hands-on-addons kubernetes/helm/environments/istio-system -n istio-system --wait
 
+// list the secret and certificate
+$ kubectl -n istio-system get secret hands-on-certificate
+$ kubectl -n istio-system get certificate  hands-on-certificate
 
 
 
@@ -77,6 +80,14 @@ $ minikube tunnel
 
 $ INGRESS_IP=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 $ echo $INGRESS_IP
+
+
+// should return 200
+curl -o /dev/null -sk -L -w "%{http_code}\n" https://kiali.minikube.me/kiali/
+curl -o /dev/null -sk -L -w "%{http_code}\n" https://tracing.minikube.me
+curl -o /dev/null -sk -L -w "%{http_code}\n" https://grafana.minikube.me
+curl -o /dev/null -sk -L -w "%{http_code}\n" https://prometheus.minikube.me/graph#/
+
 
 
 
@@ -94,12 +105,11 @@ $ for f in kubernetes/helm/components/*; do helm dep up $f; done
 $ for f in kubernetes/helm/environments/*; do helm dep up $f; done
 
 //
-helm install hands-on-dev-env kubernetes/helm/environments/dev-env -n hands-on --wait
+$ helm install hands-on-dev-env kubernetes/helm/environments/dev-env -n hands-on --wait
 
+$ kubectl get pods    // all should be up and running. Use kubectl logs POD_NAME     or kubectl describe pod POD_NAME to see what wen't wrong
 
-kubectl get pods    // all should be up and running. Use kubectl logs POD_NAME     or kubectl describe pod POD_NAME to see what wen't wrong
-
-then run the test script
+// then run the test script
 $ ./setup-test.bash
 
 or test it manually
