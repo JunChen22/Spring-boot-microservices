@@ -278,3 +278,20 @@ Q: getting error after applying
 
 A: need to have cert-manager installed firs.
    $ helm install cert-manager jetstack/cert-manager --create-namespace --namespace cert-manager --version v1.3.1 --set installCRDs=true --wait
+
+
+
+
+
+Q: - Response Body: Jwks doesn't have key to match kid or alg from Jwt
+
+A: This error is caused by the Istio daemon, istiod, caching the JWKS from the auth server in the development environment. The auth server in the production environment will have a new JWKS, but the same identity to istiod, so it tries to reuse the old JWKS, causing this failure. Istio caches a JWKS for 20 minutes, so you can simply take a long coffee break and the issue will be gone when you are back. Or you can empty the cache by restarting istiod a few times (2 or 3 times should be sufficient). Run the following command to restart the istiod Pod:
+
+   kubectl -n istio-system delete pod -l app=istiod
+
+   If the tests still fail once the issue with cached JWKS has disappeared, with errors such as this:
+
+   Test FAILED, EXPECTED VALUE: 3, ACTUAL VALUE: 0, WILL ABORT
+
+   Then simply rerun the command and it should run fine! These errors are secondary failures caused by the original error caused by the JWKS cache.
+

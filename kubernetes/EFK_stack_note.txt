@@ -1,0 +1,211 @@
+
+- Elasticsearch, a distributed database with great capabilities for searching and analyzing large datasets
+- Fluentd, a data collector that can be used to collect log records from various sources, filter and transform the collected information,
+    and finally send it to various consumers, for example, Elasticsearch
+- Kibana, a graphical frontend to Elasticsearch that can be used to visualize search results and run analyses of the collected log records
+
+
+
+
+
+
+
+Elasticsearch version 7.12.1
+Kibana version 7.12.1
+Fluentd version 1.4.2
+fluent-plugin-detect-exceptions version 0.0.12
+
+Elastic search and Kibana can just pull from Docker hub.
+Fluentd is on Docker Hub and github.
+https://github.com/fluent/fluentd-kubernetes-daemonset
+
+
+
+
+
+
+
+============================= Deploying the EFK stack on Kubernetes ====================================================
+
+
+
+$ eval $(minikube docker-env)
+$ mvn clean package
+$ docker-compose build
+
+// Create namespace and set it to default namespace
+kubectl delete namespace hands-on
+kubectl apply -f kubernetes/hands-on-namespace.yml
+kubectl config set-context $(kubectl config current-context) --namespace=hands-on
+
+
+// Helm dependencies update
+for f in kubernetes/helm/components/*; do helm dep up $f; done
+for f in kubernetes/helm/environments/*; do helm dep up $f; done
+
+
+// Deploy the system landscape using Helm
+helm install hands-on-dev-env kubernetes/helm/environments/dev-env -n hands-on --wait
+
+
+// On a separate terminal window
+$ minikube tunnel
+
+
+// run test with script(automatic) or manually
+$ ./setup-test.bash
+
+or
+
+$ ACCESS_TOKEN=$(curl -k https://writer:secret@minikube.me/oauth2/token -d grant_type=client_credentials -s | jq .access_token -r)
+$ echo ACCESS_TOKEN=$ACCESS_TOKEN
+$ curl -ks https://minikube.me/product-composite/1 -H "Authorization: Bearer $ACCESS_TOKEN" | jq .productId
+
+
+
+
+
+
+================================== Deploying EFK stack ==========================================
+
+
+
+
+
+    https://elasticsearch.minikube.me → http://elasticsearch:9200
+    https://kibana.minikube.me → http://kibana:5601
+
+eval $(minikube docker-env)
+docker pull docker.elastic.co/elasticsearch/elasticsearch:7.12.1
+docker pull docker.elastic.co/kibana/kibana:7.12.1
+
+// Create logging namespace and deploy Elastic search to Kibana in to using Helm
+$ helm install logging-hands-on-add-on kubernetes/helm/environments/logging -n logging --create-namespace --wait
+
+
+// verify Elastic search is up and running
+curl https://elasticsearch.minikube.me -sk | jq -r .tagline
+
+
+// verify Kibana is up and running
+curl https://kibana.minikube.me -kLs -o /dev/null -w "%{http_code}\n"
+
+
+
+
+
+
+create docker file for Fluentd
+
+
+$ eval $(minikube docker-env)
+$ docker build -f kubernetes/efk/Dockerfile -t hands-on/fluentd:v1 kubernetes/efk/
+
+// Create the ConfigMap and deploy the Fluentd's DaemonSet
+$ kubectl apply -f kubernetes/efk/fluentd-hands-on-configmap.yml
+$ kubectl apply -f kubernetes/efk/fluentd-ds.yml
+$ kubectl wait --timeout=120s --for=condition=Ready pod -l app=fluentd -n kube-system
+
+
+// verify that the Fluentd Pod is healthy
+$ kubectl logs -n kube-system -l app=fluentd --tail=-1 | grep "fluentd worker is now running worker"
+
+
+// Fluentd will start collect a considerable number of log records from various containers in Minikube instance.
+// Ask Elasticsearch how many logs records have been collected.
+$ curl https://elasticsearch.minikube.me/_all/_count -sk | jq .count
+
+
+=======================================  Trying out the EFK stack ================================================
+
+some common tasks in Kibana.  https://kibana.minikube.me
+   - analyzing what types of logs records Fluentd has collected and stored in Elasticsearch. Kibana will visualize them.
+   - find all related log records created by the microservices while processing an external request. Will use the trace ID
+     in the log records as a correlation ID to find the related log records.
+   - perform root cause analysis, find the actual reason for an error.
+
+extensive guide/feature/task is on  https://www.elastic.co/guide/en/kibana/7.12/dashboard.html
+
+
+
+
+Initializing Kibana
+
+Visualize Library -> Create index pattern -> search logstash-*-> @timestamp
+
+Then
+Visualize Library -> Create new visualization -> Lens
+
+
+
+
+change chart type to Pie
+search kubernetes.namespace_name.keyword
+or search kubernetes.container_name.keyword
+
+
+
+
+
+
+
+
+Discovering the log records from microservices
+utilize one of the main features of centralized logging, finding log records from our microservices. We will also learn
+how to use the trace ID in the log records to find log records from other microservices that belong to the same process,
+for example, processing an external request sent to the public API.
+
+Product composite microservice log creation:
+LOG.info("Will get composite product info for product.id={}", productId);
+
+Product microservice log creation:
+LOG.info("Will get product info for id={}", productId);
+
+Recommendation microservice log creation:
+LOG.info("Will get recommendations for product with id={}", productId);
+
+Review microservice log creation:
+LOG.info("Will get reviews for product with id={}", productId);
+
+
+
+$ ACCESS_TOKEN=$(curl -k https://writer:secret@minikube.me/oauth2/token -d grant_type=client_credentials -s | jq .access_token -r)
+$ echo ACCESS_TOKEN=$ACCESS_TOKEN
+
+
+$ curl -X POST -k https://minikube.me/product-composite -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $ACCESS_TOKEN" \
+  --data '{"productId":1234,"name":"product name 1234","weight":1234}'
+
+
+go to Discover -> show fields that interested like
+- spring.level, the log level
+- kubernetes.namespace_name, the Kubernetes namespace
+- kubernetes.container_name, the name of the container
+- spring.trace, the trace ID used for distributed tracing
+- log, the actual log message
+
+
+
+
+Performing root cause analyses
+
+
+$ curl -H "Authorization: Bearer $ACCESS_TOKEN" -k https://minikube.me/product-composite/1234?faultPercent=100
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
